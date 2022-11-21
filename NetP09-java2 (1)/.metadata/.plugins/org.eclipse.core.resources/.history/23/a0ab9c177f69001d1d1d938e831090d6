@@ -1,0 +1,55 @@
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+
+public class UserChatRoom extends JFrame{
+
+	private JFrame frame;
+	private JPanel totalPanel;
+	
+	private JPanel roomInfoPanel;
+	private JLabel roomInfoImageLabel;
+	private JLabel roomInfoNameLabel;
+	
+	private JPanel chattingPanel;
+	private JLabel nameLabel;
+	private JLabel imageLabel;
+	private JLabel chatLabel;
+	private JLabel timeLabel;
+	
+	public UserChatRoom() {
+		setBounds(100, 100, 400, 630);
+		
+		totalPanel = new JPanel();
+		totalPanel.setLayout(null);
+		totalPanel.setBounds(100, 100, 400, 630);
+		
+		roomInfoPanel = new JPanel();
+		chattingPanel = new JPanel();
+	
+		totalPanel.add(roomInfoPanel);
+		totalPanel.add(chattingPanel);
+		
+		roomInfoImageLabel = new JLabel();
+		roomInfoNameLabel = new JLabel();
+
+		roomInfoPanel.add(roomInfoImageLabel);
+		roomInfoPanel.add(roomInfoNameLabel);
+		
+		nameLabel = new JLabel();
+		imageLabel = new JLabel();
+		chatLabel = new JLabel();
+		timeLabel = new JLabel();
+
+		chattingPanel.add(nameLabel);
+		chattingPanel.add(imageLabel);
+		chattingPanel.add(chatLabel);
+		chattingPanel.add(timeLabel);
+		
+		
+	}
+
+}

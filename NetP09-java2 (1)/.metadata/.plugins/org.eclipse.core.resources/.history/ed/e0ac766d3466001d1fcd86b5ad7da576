@@ -1,0 +1,322 @@
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
+import javax.swing.JSplitPane;
+import javax.swing.JList;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.awt.event.ActionEvent;
+import javax.swing.JPanel;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+
+import JavaObjClientView.ImageSendAction;
+import JavaObjClientView.ListenNetwork;
+import JavaObjClientView.TextSendAction;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import java.awt.Label;
+import java.awt.Color;
+import java.awt.Insets;
+
+
+public class JavaChatClientView implements ActionListener{
+
+	private static final long serialVersionUID = 1L;
+
+	private JFrame frame;
+	private JButton profileBtn;
+	private JButton chatBtn;
+	private JSplitPane splitPane;
+	private JPanel profilePane;
+	private JScrollPane chatScrollPane;
+	private JPanel panel;
+	private JLabel friendText;
+	private JLabel chatText;
+
+	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
+	private Socket socket; // 연결소켓
+	private InputStream is;
+	private OutputStream os;
+	private DataInputStream dis;
+	private DataOutputStream dos;
+
+	private ObjectInputStream ois;
+	private ObjectOutputStream oos;
+
+
+	public JavaChatClientView(String username, String ip_addr, String port_no) {
+		frame = new JFrame();
+        frame.setBounds(100, 100, 380, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+     
+        // splitPane 만들기
+        makeSplitPane();
+        makeChatPane();
+        makeProfilePane();
+        makeTabBar();
+        
+        profilePane.setVisible(true);
+//        chatScrollPane.setVisible(false);
+        
+        try {
+			socket = new Socket(ip_addr, Integer.parseInt(port_no));
+//			is = socket.getInputStream();
+//			dis = new DataInputStream(is);
+//			os = socket.getOutputStream();
+//			dos = new DataOutputStream(os);
+
+			oos = new ObjectOutputStream(socket.getOutputStream());
+			oos.flush();
+			ois = new ObjectInputStream(socket.getInputStream());
+
+			//SendMessage("/login " + UserName);
+			ChatMsg obcm = new ChatMsg(UserName, "100", "Hello");
+			SendObject(obcm);
+			
+			ListenNetwork net = new ListenNetwork();
+			net.start();
+			TextSendAction action = new TextSendAction();
+			btnSend.addActionListener(action);
+			txtInput.addActionListener(action);
+			txtInput.requestFocus();
+			ImageSendAction action2 = new ImageSendAction();
+			imgBtn.addActionListener(action2);
+
+		} catch (NumberFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			AppendText("connect error");
+		}
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		JButton btn = (JButton)e.getSource();
+		if(btn == profileBtn) {
+			profilePane.setVisible(true);
+	        chatScrollPane.setVisible(false);
+	        
+	        System.out.println("profile btn clicked!");
+		}
+		
+		else if(btn == chatBtn) {
+			profilePane.setVisible(false);
+        	chatScrollPane.setVisible(true);
+			System.out.println("chatList btn clicked!");
+		}
+    }
+	
+	private void makeSplitPane() {
+		splitPane = new JSplitPane();
+        frame.getContentPane().add(splitPane);
+        splitPane.setEnabled(false);
+        splitPane.setDividerLocation(75);
+        splitPane.setDividerSize(0);
+	}
+	
+	private void makeTabBar() {
+		panel = new JPanel();
+        splitPane.setLeftComponent(panel);
+        panel.setLayout(new GridLayout(8, 1, 0, 0));
+        
+        // 버튼 이미지 크기 조절
+        ImageIcon personIcon = new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/icon/person.png");
+        Image personImg = personIcon.getImage();
+        Image updatePersonImg = personImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+        ImageIcon updatePersonIcon = new ImageIcon(updatePersonImg);
+        
+        ImageIcon chatIcon = new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/icon/chat.png");
+        Image chatImg = chatIcon.getImage();
+        Image updateChatImg = chatImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+        ImageIcon updateChatIcon = new ImageIcon(updateChatImg);
+        
+        ImageIcon exitIcon = new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/icon/exit.png");
+        Image exitImg = exitIcon.getImage();
+        Image updateExitImg = exitImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+        ImageIcon updateExitIcon = new ImageIcon(updateExitImg);
+                        
+        // 버튼 만들어서 아이콘 적
+    	profileBtn = new JButton("");
+        profileBtn.setIcon(updatePersonIcon);
+        profileBtn.setBorderPainted(false);
+        profileBtn.setContentAreaFilled(false);
+        //        btnNewButton.setFocusPainted(false);
+        profileBtn.addActionListener(this);
+        panel.add(profileBtn);
+
+        chatBtn = new JButton("");
+        chatBtn.setIcon(updateChatIcon);
+        chatBtn.setBorderPainted(false);
+        chatBtn.setContentAreaFilled(false);
+        chatBtn.addActionListener(this);
+
+        //        btnNewButton_1.setFocusPainted(false);
+        panel.add(chatBtn);
+        
+        JLabel emptyLabel = new JLabel("");
+        panel.add(emptyLabel);
+        
+        JLabel emptyLabel1 = new JLabel("");
+        panel.add(emptyLabel1);
+        
+        JLabel emptyLabel2 = new JLabel("");
+        panel.add(emptyLabel2);
+        
+        JLabel emptyLabel3 = new JLabel("");
+        panel.add(emptyLabel3);
+        
+        JLabel emptyLabel4 = new JLabel("");
+        panel.add(emptyLabel4);
+        
+        JButton exitBtn = new JButton("");
+        exitBtn.setIcon(updateExitIcon);
+        exitBtn.setContentAreaFilled(false);
+        exitBtn.setBorderPainted(false);
+        //        btnNewButton_2.setFocusPainted(false);
+        panel.add(exitBtn);        
+	}
+	
+	private void makeProfilePane() {
+		profilePane = new JPanel();
+		profilePane.setBackground(new Color(255, 255, 255));
+		
+        splitPane.setRightComponent(profilePane);
+        profilePane.setLayout(new GridLayout(10,1,0,0));
+        
+        Font font = new Font("Aharoni 굵게", Font.BOLD, 15);
+        
+        friendText = new JLabel("친구");
+        friendText.setVerticalAlignment(SwingConstants.TOP);
+        friendText.setHorizontalAlignment(SwingConstants.LEFT);
+        friendText.setFont(font);
+        friendText.setBorder(BorderFactory.createEmptyBorder( 15,10 , 0 , 0));
+        friendText.setForeground(new Color(0, 0, 0));
+
+        profilePane.add(friendText);
+        
+        TitledBorder tb = new TitledBorder(new EmptyBorder(0, 0, 0, 0));
+        
+        JSplitPane userSplitPane1 = new JSplitPane();
+        userSplitPane1.setBackground(new Color(255, 255, 255));        
+        profilePane.add(userSplitPane1);
+        userSplitPane1.setBorder(tb);
+        
+        JLabel imageLabel1 = new JLabel("");
+        imageLabel1.setIcon(new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/default_profile.jpeg"));
+        userSplitPane1.setLeftComponent(imageLabel1);
+        
+        JLabel nameLabel1 = new JLabel("user1");
+        userSplitPane1.setRightComponent(nameLabel1);
+        
+        userSplitPane1.setEnabled(false);
+        userSplitPane1.setDividerLocation(60);
+        userSplitPane1.setDividerSize(0);
+        
+        JLabel friendsText = new JLabel("친구 4");
+        friendsText.setVerticalAlignment(SwingConstants.TOP);
+        friendsText.setHorizontalAlignment(SwingConstants.LEFT);
+        friendsText.setForeground(Color.BLACK);
+        friendsText.setFont(new Font("Dialog", Font.PLAIN, 11));
+        friendsText.setBorder(BorderFactory.createEmptyBorder(30,10 , 0 , 0));
+        profilePane.add(friendsText);
+        
+        JSplitPane userSplitPane2 = new JSplitPane();
+        userSplitPane2.setBackground(new Color(255, 255, 255));
+        userSplitPane2.setEnabled(false);
+        userSplitPane2.setDividerSize(0);
+        profilePane.add(userSplitPane2);
+        userSplitPane2.setBorder(tb);
+
+        
+        JLabel imageLabel2 = new JLabel("");
+        imageLabel2.setIcon(new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/default_profile.jpeg"));
+        userSplitPane2.setLeftComponent(imageLabel2);
+        
+        JLabel nameLabel2 = new JLabel("user2");
+        userSplitPane2.setRightComponent(nameLabel2);
+        userSplitPane2.setDividerLocation(60);
+        
+        JSplitPane userSplitPane3 = new JSplitPane();
+        userSplitPane3.setBackground(new Color(255, 255, 255));
+        userSplitPane3.setEnabled(false);
+        userSplitPane3.setDividerSize(0);
+        profilePane.add(userSplitPane3);
+        userSplitPane3.setBorder(tb);
+
+        
+        JLabel imageLabel3 = new JLabel("");
+        imageLabel3.setIcon(new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/default_profile.jpeg"));
+        userSplitPane3.setLeftComponent(imageLabel3);
+        
+        JLabel nameLabel3 = new JLabel("user3");
+        userSplitPane3.setRightComponent(nameLabel3);
+        userSplitPane3.setDividerLocation(60);
+        
+        JSplitPane userSplitPane4 = new JSplitPane();
+        userSplitPane4.setBackground(new Color(255, 255, 255));
+        userSplitPane4.setEnabled(false);
+        userSplitPane4.setDividerSize(0);
+        profilePane.add(userSplitPane4);
+        userSplitPane4.setBorder(tb);
+
+        
+        JLabel imageLabel4 = new JLabel("");
+        imageLabel4.setIcon(new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/default_profile.jpeg"));
+        userSplitPane4.setLeftComponent(imageLabel4);
+        
+        JLabel nameLabel4 = new JLabel("user4");
+        userSplitPane4.setRightComponent(nameLabel4);
+        userSplitPane4.setDividerLocation(60);
+        
+        JSplitPane userSplitPane5 = new JSplitPane();
+        userSplitPane5.setBackground(new Color(255, 255, 255));
+        userSplitPane5.setEnabled(false);
+        userSplitPane5.setDividerSize(0);
+        profilePane.add(userSplitPane5);
+        userSplitPane5.setBorder(tb);
+
+        
+        JLabel imageLabel5 = new JLabel("");
+        imageLabel5.setIcon(new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/default_profile.jpeg"));
+        userSplitPane5.setLeftComponent(imageLabel5);
+        
+        JLabel nameLabel5 = new JLabel("user5");
+        userSplitPane5.setRightComponent(nameLabel5);
+        userSplitPane5.setDividerLocation(60);
+
+	}
+	
+	private void makeChatPane() {
+		chatScrollPane = new JScrollPane();
+		splitPane.setRightComponent(chatScrollPane);
+		
+		Font font = new Font("Aharoni 굵게", Font.BOLD, 15);
+        chatText = new JLabel("채팅");
+        chatText.setFont(font);
+        chatText.setBorder(BorderFactory.createEmptyBorder(10 , 10 , 0 , 0));
+        chatText.setForeground(new Color(0, 0, 0));
+        chatScrollPane.setColumnHeaderView(chatText);
+	}
+}

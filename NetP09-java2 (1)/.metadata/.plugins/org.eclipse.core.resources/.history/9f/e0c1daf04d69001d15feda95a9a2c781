@@ -1,0 +1,59 @@
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import java.awt.BorderLayout;
+
+public class UserProfile extends JFrame{
+
+	private JFrame frame;
+	private JPanel profilePane;
+	private JPanel userImagePane;
+	private JPanel usernamePane;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					UserProfile window = new UserProfile();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public UserProfile() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		profilePane = new JPanel();
+		userImagePane = new JPanel();
+		userImagePane.setBounds(0, 121, 113, -121);
+		usernamePane = new JPanel();
+		usernamePane.setBounds(113, 161, 214, -121);
+		
+		profilePane.setLayout(null);
+		userImagePane.setLayout(null);
+		usernamePane.setLayout(null);
+		
+		setContentPane(profilePane);
+		profilePane.add(userImagePane);
+		profilePane.add(usernamePane);
+
+
+		
+	}
+
+
+}

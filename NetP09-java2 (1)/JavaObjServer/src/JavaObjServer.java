@@ -39,6 +39,7 @@ public class JavaObjServer extends JFrame {
 	private ServerSocket socket; // 서버소켓
 	private Socket client_socket; // accept() 에서 생성된 client 소켓
 	private Vector UserVec = new Vector(); // 연결된 사용자를 저장할 벡터
+	private Vector RoomVec = new Vector(); // 사용자가 만든 채팅방을 저장하는 벡터 
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 
 	/**
@@ -157,6 +158,7 @@ public class JavaObjServer extends JFrame {
 
 		private Socket client_socket;
 		private Vector user_vc;
+		private Vector room_vc;
 		public String UserName = "";
 		public String UserStatus;
 
@@ -220,6 +222,15 @@ public class JavaObjServer extends JFrame {
 				if (user.UserStatus == "O")
 					user.WriteOneObject(ob);
 			}
+		}
+		
+		// 프로필 사진
+		public void changeProfile() {
+			// 구현해야 될 것 
+			// 1. 클라이언트가 ChatMsg의 setImg()를 이용하여 사진을 설정하고 사진을 서버로 전송
+			// 2. 서버가 사진을 받아 해당 객체의 사진을 서버의 ChatMsg의 setImg()로 설정하고 사진을 전송 
+			
+			
 		}
 
 		// 나를 제외한 User들에게 방송. 각각의 UserService Thread의 WriteONe() 을 호출한다.
@@ -362,6 +373,12 @@ public class JavaObjServer extends JFrame {
 						UserName = cm.getId();
 						UserStatus = "O"; // Online 상태
 						Login();
+					} else if (cm.getCode().matches("101")){
+						// 프로필을 변경하는 부분
+						// 해당 객체를 가져와서 서버에서 다시 다른 객체에게 해당 객체의 프로필 변경사항을 뿌려줌...?
+						changeProfile(); // 아직 구현 X
+						
+						
 					} else if (cm.getCode().matches("200")) {
 						msg = String.format("[%s] %s", cm.getId(), cm.getData());
 						AppendText(msg); // server 화면에 출력
@@ -405,12 +422,26 @@ public class JavaObjServer extends JFrame {
 							//WriteAll(msg + "\n"); // Write All
 							WriteAllObject(cm);
 						}
-					} else if (cm.getCode().matches("400")) { // logout message 처리
+					} else if (cm.getCode().matches("201")) {
+						// 교수님 예제 코드상에서 프로토콜이 300일 때, 이미지라 되어 있어서 300을 -> 201로 바꿈
+						WriteAllObject(cm);
+					} else if (cm.getCode().matches("300")) {
+						// 클라에서 방을 생성 했을 때 -> 내부적으로 new ChatRoom(room_id = "1234", userlist) 를 생성하고, 그 room 들을 RoomVector 로 관리
+						
+					} else if(cm.getCode().matches("301")) {
+						// 클라에서 방을 삭제 했을 때 ->  
+					} else if(cm.getCode().matches("400")) {
+						// 클라에서 방 입장 할 때,  
+					} else if(cm.getCode().matches("401")) {
+						// 클라가 방을 퇴장할 
+					} else if(cm.getCode().matches("500")) {
+						// 친구 초대, 기존에 있었던 방에 
+					}
+					
+					else if (cm.getCode().matches("600")) { // logout message 처리
 						Logout();
 						break;
-					} else if (cm.getCode().matches("300")) {
-						WriteAllObject(cm);
-					}
+					} 
 				} catch (IOException e) {
 					AppendText("ois.readObject() error");
 					try {

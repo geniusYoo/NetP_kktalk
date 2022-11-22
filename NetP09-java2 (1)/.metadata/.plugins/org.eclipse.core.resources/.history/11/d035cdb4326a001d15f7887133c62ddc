@@ -66,6 +66,18 @@ public class ChatClient extends JFrame {
 	JTextPane textArea;
 	JTextField textInput;
 	
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					JavaObjClientMain frame = new JavaObjClientMain();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 	public ChatClient(String username, String ip_addr, String port_no) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 400, 630);

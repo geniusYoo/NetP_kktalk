@@ -15,7 +15,6 @@ public class UserList extends JFrame{
 		JLabel label = new JLabel("채팅 상대를 선택하세요.");
 		label.setBounds(10,15,200,30);
 		panel.add(label);
-		
 		JCheckBox userCheckBox1 = new JCheckBox("user1");
 		userCheckBox1.setBounds(0, 50, 70, 30);
 		panel.add(userCheckBox1);

@@ -28,6 +28,9 @@ import javax.swing.SwingConstants;
 
 public class JavaObjServer extends JFrame {
 
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	JTextArea textArea;
@@ -38,6 +41,9 @@ public class JavaObjServer extends JFrame {
 	private Vector UserVec = new Vector(); // 연결된 사용자를 저장할 벡터
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 
+	/**
+	 * Launch the application.
+	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -51,6 +57,9 @@ public class JavaObjServer extends JFrame {
 		});
 	}
 
+	/**
+	 * Create the frame.
+	 */
 	public JavaObjServer() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 338, 440);

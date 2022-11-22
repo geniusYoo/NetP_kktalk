@@ -26,8 +26,7 @@ public class UserProfile extends JPanel{
 		profilePane.setBounds(0,0,300,50);
 		
 		profileImageLabel = new JLabel("");
-		profileImageLabel.setIcon(new ImageIcon(UserProfile.class.getResource("/icons/default_profile.jpeg")));       
-		profileImageLabel.setBounds(0,0,50,50);
+		profileImageLabel.setIcon(new ImageIcon(UserProfile.class.getResource("/icons/default_profile.jpeg")));        profileImageLabel.setBounds(0,0,50,50);
         
         profileNameLabel = new JLabel(username);
         profileNameLabel.setBounds(60,0,240,50);

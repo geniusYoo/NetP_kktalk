@@ -148,9 +148,11 @@ public class JavaObjServer extends JFrame {
 
 		private Socket client_socket;
 		private Vector user_vc;
+		private Vector<String> username_vc = new Vector<>();
 		public String UserName = "";
 		public String UserStatus;
 
+		
 		public UserService(Socket client_socket) {
 			// TODO Auto-generated constructor stub
 			// 매개변수로 넘어온 자료 저장
@@ -165,13 +167,20 @@ public class JavaObjServer extends JFrame {
 				AppendText("userService error");
 			}
 		}
-
+		
+		public String getUsername() { 
+			return this.UserName;
+		}
 		public void Login() {
 			AppendText("새로운 참가자 " + UserName + " 입장.");
-			WriteOne("Welcome to Java chat server\n");
-			WriteOne(UserName + "님 환영합니다.\n"); // 연결된 사용자에게 정상접속을 알림
-			String msg = "[" + UserName + "]님이 입장 하였습니다.\n";
+			String msg = UserName;
 			WriteOthers(msg); // 아직 user_vc에 새로 입장한 user는 포함되지 않았다.
+			System.out.println("user_vc: " + UserVec.elementAt(0));
+			if(user_vc.size() > 1) {
+				for(int i=user_vc.size()-2; i>=0; i--) {
+					MakeProfile(username_vc.elementAt(i));
+				}
+			}
 		}
 
 		public void Logout() {
@@ -202,10 +211,37 @@ public class JavaObjServer extends JFrame {
 		public void WriteOthers(String str) {
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
-				if (user != this && user.UserStatus == "O")
-					user.WriteOne(str);
+				if (user != this && user.UserStatus == "O") {
+					user.MakeProfile(str);
+				}
 			}
 		}
+		
+		// 새로운 참가자가 로그인할 때 나를 제외한 참가자들에게 프로필을 만들라고 지시하는 함수.
+		public void MakeProfile(String msg) {
+			try {
+				ChatMsg obcm = new ChatMsg("SERVER", "101", msg);
+				oos.writeObject(obcm);
+			} catch (IOException e) {
+				AppendText("dos.writeObject() error");
+				try {
+//					dos.close();
+//					dis.close();
+					ois.close();
+					oos.close();
+					client_socket.close();
+					client_socket = null;
+					ois = null;
+					oos = null;
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				Logout(); // 에러가난 현재 객체를 벡터에서 지운다
+			}
+		}
+		
+		
 
 		// Windows 처럼 message 제외한 나머지 부분은 NULL 로 만들기 위한 함수
 		public byte[] MakePacket(String msg) {
@@ -319,6 +355,7 @@ public class JavaObjServer extends JFrame {
 						continue;
 					if (cm.getCode().matches("100")) {
 						UserName = cm.getId();
+						username_vc.add(cm.getId());
 						UserStatus = "O"; // Online 상태
 						Login();
 					} else if (cm.getCode().matches("200")) {

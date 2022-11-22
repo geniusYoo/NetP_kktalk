@@ -59,6 +59,7 @@ public class ChatClient extends JFrame {
 	private JPanel tabBarPanel;
 	private JPanel userListPanel;
 	private JPanel roomListPanel;
+	private JPanel othersProfilePanel;
 	private JButton userListButton;
 	private JButton roomListButton;
 	private JButton exitButton;
@@ -67,7 +68,7 @@ public class ChatClient extends JFrame {
 	JTextPane textArea;
 	JTextField textInput;
 	
-	private Vector userVector = new Vector();
+	private Vector<String> userVector = new Vector();
 	
 	public ChatClient(String username, String ip_addr, String port_no) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -77,15 +78,9 @@ public class ChatClient extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
-		makeTabBar(); // TabBar 구성하기
-		makeUserListPanel(username);
-		makeRoomListPanel();
-		
-//		UserChatRoom userChatRoom = new UserChatRoom();
-//		textArea = UserChatRoom.textArea;
-//		textInput = UserChatRoom.txtInput;
-//		roomListPanel.setVisible(false);
+
+//		makeChatButton.setVisible(false);
+
 		try {
 			socket = new Socket(ip_addr, Integer.parseInt(port_no));
 
@@ -96,8 +91,10 @@ public class ChatClient extends JFrame {
 			//SendMessage("/login " + UserName);
 			ChatMsg obcm = new ChatMsg(username, "100", "Hello");
 			SendObject(obcm);
+			System.out.println("vector add start ");		
 			userVector.add(username);
-			
+			System.out.println("vector add end , size : "+ userVector.size());
+
 			ListenNetwork net = new ListenNetwork();
 			net.start();
 
@@ -107,6 +104,10 @@ public class ChatClient extends JFrame {
 			AppendText("connect error");
 		}
 		
+		makeTabBar(); // TabBar 구성하기
+		makeUserListPanel(username);
+		makeRoomListPanel();
+		roomListPanel.setVisible(false);
 		
 	}
 	public void makeTabBar() {
@@ -120,6 +121,9 @@ public class ChatClient extends JFrame {
 		
 		roomListButton = new JButton("");
 		tabBarPanel.add(roomListButton);
+		
+		exitButton = new JButton("");
+		tabBarPanel.add(exitButton);
 		
 		ImageIcon personIcon = new ImageIcon(ChatClient.class.getResource("/icons/person.png"));
         Image personImg = personIcon.getImage();
@@ -145,44 +149,54 @@ public class ChatClient extends JFrame {
         roomListButton.setBorderPainted(false);
         roomListButton.setContentAreaFilled(false);
         roomListButton.addActionListener(listener);
+        
+        exitButton.setIcon(exitIcon);
+        exitButton.setBorderPainted(false);
+        exitButton.setContentAreaFilled(false);
 	}
 	
+	// 처음 로딩될 때 자신의 프로필을 userListPanel에 붙이는 과정
 	public void makeUserListPanel(String username) {
 		userListPanel = new JPanel();
 		userListPanel.setLayout(null);
 		contentPane.add(userListPanel);
 		userListPanel.setBounds(100, 0, 300, 600);
 
-		UserProfile user1 = new UserProfile(username); 
-//		UserProfile user2 = new UserProfile("youngjae");
-//		UserProfile user3 = new UserProfile("user3");
-//		UserProfile user4 = new UserProfile("user4");
-//		UserProfile user5 = new UserProfile("user5");
-//	
-		userListPanel.add(user1);
-		user1.setLayout(null);
-		user1.setBounds(0,0,300,50);
-		user1.add(user1.profilePane);
+		JPanel myProfilePanel = new JPanel();
+		myProfilePanel.setLayout(null);
+		userListPanel.add(myProfilePanel);
+		myProfilePanel.setBounds(0, 0, 300, 170);
+
+		JLabel lblFriendsLabel = new JLabel("친구");
+		lblFriendsLabel.setBounds(20, 20, 280, 40);
+		lblFriendsLabel.setFont(new Font("D2Coding",Font.BOLD, 20));
+		myProfilePanel.add(lblFriendsLabel);
 		
-//		userListPanel.add(user2);
-//		user2.setLayout(null);
-//		user2.setBounds(0,60,300,50);
-//		user2.add(user2.profilePane);
-//
-//		userListPanel.add(user3);
-//		user3.setLayout(null);
-//		user3.setBounds(0,120,300,50);
-//		user3.add(user3.profilePane);
-//		
-//		userListPanel.add(user4);
-//		user4.setLayout(null);
-//		user4.setBounds(0,180,300,50);
-//		user4.add(user4.profilePane);
-//		
-//		userListPanel.add(user5);
-//		user5.setLayout(null);
-//		user5.setBounds(0,240,300,50);
-//		user5.add(user5.profilePane);
+		UserProfile user = new UserProfile(username); 
+
+		myProfilePanel.add(user);
+		user.setLayout(null);
+		user.setBounds(0,60,300,50);
+		user.add(user.profilePane);
+		
+		JLabel lblLabel = new JLabel("친구 목록");
+		lblLabel.setBounds(20, 130, 100, 40);
+		lblLabel.setFont(new Font("D2Coding",Font.PLAIN, 15));
+		myProfilePanel.add(lblLabel);
+
+		othersProfilePanel = new JPanel();
+		othersProfilePanel.setLayout(new GridLayout(8,1));
+		userListPanel.add(othersProfilePanel);
+		othersProfilePanel.setBounds(0,170,300,440);	
+	}
+	
+	public void updateProfile(String username) {		
+		UserProfile otherUser = new UserProfile(username);
+		othersProfilePanel.add(otherUser);
+		otherUser.setLayout(null);
+		otherUser.add(otherUser.profilePane);	
+		othersProfilePanel.revalidate();
+		userListPanel.revalidate();
 	}
 	
 	public void makeRoomListPanel() {
@@ -261,6 +275,11 @@ public class ChatClient extends JFrame {
 					switch (cm.getCode()) {
 						case "100":
 							System.out.println("enter chatting");
+							break;
+						case "101":
+							System.out.println("101");
+							System.out.println(cm.getData());
+							updateProfile(cm.getData());
 							break;
 						case "200": // chat message
 							System.out.println("chat msg");

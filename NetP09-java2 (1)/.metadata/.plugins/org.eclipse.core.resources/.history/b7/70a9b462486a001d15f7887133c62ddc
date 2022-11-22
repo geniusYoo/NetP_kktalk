@@ -67,7 +67,6 @@ public class ChatClient extends JFrame {
 	JTextPane textArea;
 	JTextField textInput;
 	
-	private Vector userVector = new Vector();
 	
 	public ChatClient(String username, String ip_addr, String port_no) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,7 +80,6 @@ public class ChatClient extends JFrame {
 		makeTabBar(); // TabBar 구성하기
 		makeUserListPanel(username);
 		makeRoomListPanel();
-		
 //		UserChatRoom userChatRoom = new UserChatRoom();
 //		textArea = UserChatRoom.textArea;
 //		textInput = UserChatRoom.txtInput;
@@ -96,7 +94,6 @@ public class ChatClient extends JFrame {
 			//SendMessage("/login " + UserName);
 			ChatMsg obcm = new ChatMsg(username, "100", "Hello");
 			SendObject(obcm);
-			userVector.add(username);
 			
 			ListenNetwork net = new ListenNetwork();
 			net.start();

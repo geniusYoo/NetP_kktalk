@@ -67,7 +67,7 @@ public class ChatClient extends JFrame {
 	JTextPane textArea;
 	JTextField textInput;
 	
-	private Vector userVector = new Vector();
+	private Vector userVecor = new Vector();
 	
 	public ChatClient(String username, String ip_addr, String port_no) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -96,8 +96,7 @@ public class ChatClient extends JFrame {
 			//SendMessage("/login " + UserName);
 			ChatMsg obcm = new ChatMsg(username, "100", "Hello");
 			SendObject(obcm);
-			userVector.add(username);
-			
+			userVecor.add(username);
 			ListenNetwork net = new ListenNetwork();
 			net.start();
 

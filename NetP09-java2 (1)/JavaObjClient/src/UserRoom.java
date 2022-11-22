@@ -31,8 +31,7 @@ public class UserRoom extends JPanel{
 		roomPane.setBounds(0,0,300,50);
 		
 		roomImageLabel = new JLabel("");
-        roomImageLabel.setIcon(new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/default_profile.jpeg"));
-        roomImageLabel.setBounds(0,0,50,50);
+		roomImageLabel.setIcon(new ImageIcon(UserRoom.class.getResource("/icons/default_profile.jpeg")));        roomImageLabel.setBounds(0,0,50,50);
         
         roomNameLabel = new JLabel("roomName");
         roomNameLabel.setBounds(60,2,240,20);

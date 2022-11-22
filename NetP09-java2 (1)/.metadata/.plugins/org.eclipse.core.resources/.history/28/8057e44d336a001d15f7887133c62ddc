@@ -3,7 +3,6 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 public class UserList extends JFrame{
@@ -37,9 +36,6 @@ public class UserList extends JFrame{
 		userCheckBox5.setBounds(0, 210, 70, 30);
 		panel.add(userCheckBox5);
 		
-		JButton applyButton = new JButton("apply");
-		applyButton.setBounds(380,210,50,40);
-		panel.add(applyButton);
 		
 	}
 }

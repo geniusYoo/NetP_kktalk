@@ -38,7 +38,7 @@ public class UserList extends JFrame{
 		panel.add(userCheckBox5);
 		
 		JButton applyButton = new JButton("apply");
-		applyButton.setBounds(380,210,50,40);
+		applyButton.setBounds(300,210,80,80);
 		panel.add(applyButton);
 		
 	}

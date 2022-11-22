@@ -119,17 +119,17 @@ public class ChatClient extends JFrame {
 		roomListButton = new JButton("");
 		tabBarPanel.add(roomListButton);
 		
-		ImageIcon personIcon = new ImageIcon("/Users/kimjw/Desktop/JavaChatImg/icon/person.png");
+		ImageIcon personIcon = new ImageIcon(ChatClient.class.getResource("/icons/person.png"));
         Image personImg = personIcon.getImage();
         Image updatePersonImg = personImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         ImageIcon updatePersonIcon = new ImageIcon(updatePersonImg);
         
-        ImageIcon chatIcon = new ImageIcon("/Users/kimjw/Desktop/JavaChatImg/icon/chat.png");
+        ImageIcon chatIcon = new ImageIcon(ChatClient.class.getResource("/icons/chat.png"));
         Image chatImg = chatIcon.getImage();
         Image updateChatImg = chatImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         ImageIcon updateChatIcon = new ImageIcon(updateChatImg);
         
-        ImageIcon exitIcon = new ImageIcon("/Users/kimjw/Desktop/JavaChatImg/icon/exit.png");
+        ImageIcon exitIcon = new ImageIcon(ChatClient.class.getResource("/icons/exit.png"));
         Image exitImg = exitIcon.getImage();
         Image updateExitImg = exitImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         ImageIcon updateExitIcon = new ImageIcon(updateExitImg);
@@ -144,14 +144,14 @@ public class ChatClient extends JFrame {
 	}
 	
 	public void makeUserListPanel() {
-//		userListPanel = new JPanel();
-//		userListPanel.setLayout(null);
-//		userListPanel.setBounds(100, 0, 300, 600);
-//		contentPane.add(userListPanel);
-//		
-//		UserProfile userProfile = new UserProfile();
-//		userProfile.setBounds(0,0,300,70);
-//		userListPanel.add(userProfile);
+		userListPanel = new JPanel();
+		userListPanel.setLayout(null);
+		userListPanel.setBounds(100, 0, 300, 600);
+		contentPane.add(userListPanel);
+		
+		UserProfile userProfile = new UserProfile();
+		userProfile.setBounds(0,0,300,70);
+		userListPanel.add(userProfile);
 	}
 	
 	public void makeRoomListPanel() {
@@ -168,7 +168,7 @@ public class ChatClient extends JFrame {
 		// 새로운 채팅 만드는 버튼 만들기 
 		JButton makeChatButton = new JButton("");
 		makeChatButton.setBounds(230, 20, 50, 40);
-		ImageIcon chatIcon = new ImageIcon("/Users/kimjw/Desktop/JavaChatImg/icon/plus_chat.png");
+		ImageIcon chatIcon = new ImageIcon(ChatClient.class.getResource("/icons/plus_chat.png"));
         Image chatImg = chatIcon.getImage();
         Image updateChatImg = chatImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         ImageIcon updateChatIcon = new ImageIcon(updateChatImg);

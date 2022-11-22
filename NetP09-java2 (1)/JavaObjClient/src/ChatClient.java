@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.security.PublicKey;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -61,15 +62,18 @@ public class ChatClient extends JFrame {
 	private JButton userListButton;
 	private JButton roomListButton;
 	private JButton exitButton;
-	private JButton createRoomButton;
+	private JButton makeChatButton;
+	
+	private String selectedUserList;
 	
 	JTextPane textArea;
 	JTextField textInput;
 	
+	
 	public ChatClient(String username, String ip_addr, String port_no) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 400, 630);
-		
+		setVisible(true);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -78,7 +82,7 @@ public class ChatClient extends JFrame {
 		makeTabBar(); // TabBar 구성하기
 		makeUserListPanel();
 		makeRoomListPanel();
-		addActionListener(); // 탭바 버튼에 actionListener 달
+		UserList.applyButton.addActionListener(listener);
 //		UserChatRoom userChatRoom = new UserChatRoom();
 //		textArea = UserChatRoom.textArea;
 //		textInput = UserChatRoom.txtInput;
@@ -135,10 +139,12 @@ public class ChatClient extends JFrame {
         userListButton.setIcon(updatePersonIcon);
         userListButton.setBorderPainted(false);
         userListButton.setContentAreaFilled(false);
+        userListButton.addActionListener(listener);
         
         roomListButton.setIcon(updateChatIcon);
         roomListButton.setBorderPainted(false);
         roomListButton.setContentAreaFilled(false);
+        roomListButton.addActionListener(listener);
 	}
 	
 	public void makeUserListPanel() {
@@ -191,7 +197,7 @@ public class ChatClient extends JFrame {
 		roomListPanel.add(lblChatLabel);
 		
 		// 새로운 채팅 만드는 버튼 만들기 
-		JButton makeChatButton = new JButton("");
+		makeChatButton = new JButton("");
 		makeChatButton.setBounds(230, 20, 50, 40);
 		ImageIcon chatIcon = new ImageIcon(ChatClient.class.getResource("/icons/plus_chat.png"));
         Image chatImg = chatIcon.getImage();
@@ -200,7 +206,9 @@ public class ChatClient extends JFrame {
         makeChatButton.setIcon(updateChatIcon);
         makeChatButton.setBorderPainted(false);
         makeChatButton.setContentAreaFilled(false);
+        makeChatButton.addActionListener(listener);
 		roomListPanel.add(makeChatButton);
+		
 		
 		// roomList 보여주기 높이 70부터 
 //		UserRoom userRoom = new UserRoom();
@@ -209,23 +217,29 @@ public class ChatClient extends JFrame {
 		
 	}
 	
-	public void addActionListener() {
-		ActionListener listener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(userListButton.equals(e.getSource())) {		
-					userListPanel.setVisible(true);
-					roomListPanel.setVisible(false);
-				}
-				else if(roomListButton.equals(e.getSource())) {
-					userListPanel.setVisible(false);
-					roomListPanel.setVisible(true);
-				}
-				else if(createRoomButton.equals(e.getSource())) {
-					
-				}
+	ActionListener listener = new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			if(userListButton.equals(e.getSource())) {		
+				userListPanel.setVisible(true);
+				roomListPanel.setVisible(false);
 			}
-		};
-	}
+			else if(roomListButton.equals(e.getSource())) {
+				userListPanel.setVisible(false);
+				roomListPanel.setVisible(true);
+			}
+			else if(makeChatButton.equals(e.getSource())) {
+				UserList userList = new UserList();
+				userList.setVisible(true);
+			}
+			else if(UserList.applyButton.equals(e.getSource())) {
+				selectedUserList = UserList.getSelectedUserList();
+				System.out.println("***************Chat Client : " + selectedUserList);
+			}
+			
+			
+		}
+	};
+	
 	
 	// Server Message를 수신해서 화면에 표시
 	class ListenNetwork extends Thread {
@@ -254,7 +268,7 @@ public class ChatClient extends JFrame {
 							System.out.println("enter chatting");
 							break;
 						case "200": // chat message
-							AppendText(msg);
+							System.out.println("chat msg");
 							break;
 						case "300": // Image 첨부
 							AppendText("[" + cm.getId() + "]");

@@ -10,11 +10,20 @@ class ChatMsg implements Serializable {
 	private String data;
 	private String roomId;
 	public ImageIcon img;
-
+	public String userList;
+	
 	public ChatMsg(String username, String code, String msg) {
 		this.username = username;
 		this.code = code;
 		this.data = msg;
+	}
+	
+	public String getUserList() {
+		return userList;
+	}
+	
+	public void setUserList(String userList) {
+		this.userList = userList;
 	}
 	
 	public String getRoomId() {

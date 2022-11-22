@@ -8,13 +8,31 @@ class ChatMsg implements Serializable {
 	private String code; // 100:로그인, 400:로그아웃, 200:채팅메시지, 300:Image
 	private String data;
 	public ImageIcon img;
-
+	private String roomId;
+	private String userList;
+	
 	public ChatMsg(String id, String code, String msg) {
 		this.id = id;
 		this.code = code;
 		this.data = msg;
 	}
 
+	public String getUserList() {
+		return userList;
+	}
+	
+	public void setUserList(String userList) {
+		this.userList = userList;
+	}
+	
+	public String getRoomId() {
+		return roomId;
+	}
+
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
+	}
+	
 	public String getCode() {
 		return code;
 	}

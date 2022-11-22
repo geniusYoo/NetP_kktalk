@@ -1,8 +1,7 @@
 import java.awt.EventQueue;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
+
 import java.awt.BorderLayout;
 
 public class UserChatRoom extends JFrame{
@@ -14,24 +13,30 @@ public class UserChatRoom extends JFrame{
 	private JLabel roomInfoImageLabel;
 	private JLabel roomInfoNameLabel;
 	
-	private JPanel chattingPanel;
+	private JScrollPane chattingPanel;
 	private JLabel nameLabel;
 	private JLabel imageLabel;
 	private JLabel chatLabel;
 	private JLabel timeLabel;
 	
+	public static JTextPane textArea;
+	public static JTextField txtInput;
+	private JButton sendButton;
+
 	public UserChatRoom() {
-		setBounds(0, 0, 400, 630);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(0, 0, 400, 670);
 		
 		totalPanel = new JPanel();
 		totalPanel.setLayout(null);
-		totalPanel.setBounds(0, 0, 400, 630);
+		totalPanel.setBounds(0, 0, 400, 670);
+		setContentPane(totalPanel);
 		
 		roomInfoPanel = new JPanel();
 		roomInfoPanel.setLayout(null);
 		roomInfoPanel.setBounds(0,0,400,50);
 		
-		chattingPanel = new JPanel();
+		chattingPanel = new JScrollPane();
 		chattingPanel.setLayout(null);
 		chattingPanel.setBounds(0,50,400,580);
 		
@@ -46,8 +51,18 @@ public class UserChatRoom extends JFrame{
 		roomInfoPanel.add(roomInfoImageLabel);
 		roomInfoPanel.add(roomInfoNameLabel);
 		
+		textArea = new JTextPane();
+		textArea.setEditable(true);
+		chattingPanel.setViewportView(textArea);
 		
-		
+		txtInput = new JTextField();
+		txtInput.setBounds(0,530,330,50);
+		chattingPanel.add(txtInput);
+		txtInput.setColumns(10);
+
+		sendButton = new JButton("Send");
+		sendButton.setBounds(330,530,70,50);
+		chattingPanel.add(sendButton);
 		
 		nameLabel = new JLabel();
 		imageLabel = new JLabel();
@@ -59,7 +74,5 @@ public class UserChatRoom extends JFrame{
 		chattingPanel.add(chatLabel);
 		chattingPanel.add(timeLabel);
 		
-		
 	}
-
 }

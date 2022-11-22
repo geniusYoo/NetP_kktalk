@@ -1,4 +1,3 @@
-
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.FileDialog;
@@ -13,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -29,7 +29,10 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Window;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.JToggleButton;
@@ -41,16 +44,11 @@ public class ChatClient extends JFrame {
 	private JPanel contentPane;
 	private JTextField txtInput;
 	private String UserName;
-	private JButton btnSend;
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 	private Socket socket; // 연결소켓
 
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
-
-	private JLabel lblUserName;
-	// private JTextArea textArea;
-	private JTextPane textArea;
 
 	private Frame frame;
 	private FileDialog fd;
@@ -62,7 +60,13 @@ public class ChatClient extends JFrame {
 	private JPanel roomListPanel;
 	private JButton userListButton;
 	private JButton roomListButton;
+	private JButton exitButton;
+	private JButton createRoomButton;
 	
+	JTextPane textArea;
+	JTextField textInput;
+	
+
 	public ChatClient(String username, String ip_addr, String port_no) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 400, 630);
@@ -76,9 +80,10 @@ public class ChatClient extends JFrame {
 		makeUserListPanel();
 		makeRoomListPanel();
 		addActionListener(); // 탭바 버튼에 actionListener 달
-		
-		userListPanel.setVisible(true);
-		roomListPanel.setVisible(false);
+//		UserChatRoom userChatRoom = new UserChatRoom();
+//		textArea = UserChatRoom.textArea;
+//		textInput = UserChatRoom.txtInput;
+//		roomListPanel.setVisible(false);
 		try {
 			socket = new Socket(ip_addr, Integer.parseInt(port_no));
 
@@ -92,12 +97,6 @@ public class ChatClient extends JFrame {
 			
 			ListenNetwork net = new ListenNetwork();
 			net.start();
-//			TextSendAction action = new TextSendAction();
-//			btnSend.addActionListener(action);
-//			txtInput.addActionListener(action);
-//			txtInput.requestFocus();
-//			ImageSendAction action2 = new ImageSendAction();
-//			imgBtn.addActionListener(action2);
 
 		} catch (NumberFormatException | IOException e) {
 			// TODO Auto-generated catch block
@@ -118,6 +117,9 @@ public class ChatClient extends JFrame {
 		
 		roomListButton = new JButton("");
 		tabBarPanel.add(roomListButton);
+		
+		exitButton = new JButton("");
+		tabBarPanel.add(exitButton);
 		
 		ImageIcon personIcon = new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/icon/person.png");
         Image personImg = personIcon.getImage();
@@ -141,23 +143,58 @@ public class ChatClient extends JFrame {
         roomListButton.setIcon(updateChatIcon);
         roomListButton.setBorderPainted(false);
         roomListButton.setContentAreaFilled(false);
+        
+        exitButton.setIcon(updateExitIcon);
+        exitButton.setBorderPainted(false);
+        exitButton.setContentAreaFilled(false);
 	}
 	
 	public void makeUserListPanel() {
 		userListPanel = new JPanel();
 		userListPanel.setLayout(null);
-		userListPanel.setBounds(100, 0, 300, 600);
 		contentPane.add(userListPanel);
+		userListPanel.setBounds(100, 0, 300, 600);
+
+		UserProfile user1 = new UserProfile("geniuus"); 
+		UserProfile user2 = new UserProfile("youngjae");
+		UserProfile user3 = new UserProfile("user3");
+		UserProfile user4 = new UserProfile("user4");
+		UserProfile user5 = new UserProfile("user5");
+	
+		userListPanel.add(user1);
+		user1.setLayout(null);
+		user1.setBounds(0,0,300,50);
+		user1.add(user1.profilePane);
 		
-		UserProfile userProfile = new UserProfile();
-		userProfile.setBounds(0,0,300,70);
-		userListPanel.add(userProfile);
+		userListPanel.add(user2);
+		user2.setLayout(null);
+		user2.setBounds(0,60,300,50);
+		user2.add(user2.profilePane);
+
+		userListPanel.add(user3);
+		user3.setLayout(null);
+		user3.setBounds(0,120,300,50);
+		user3.add(user3.profilePane);
+		
+		userListPanel.add(user4);
+		user4.setLayout(null);
+		user4.setBounds(0,180,300,50);
+		user4.add(user4.profilePane);
+		
+		userListPanel.add(user5);
+		user5.setLayout(null);
+		user5.setBounds(0,240,300,50);
+		user5.add(user5.profilePane);
 	}
 	
 	public void makeRoomListPanel() {
 		roomListPanel = new JPanel();
 		roomListPanel.setBounds(100, 0, 300, 602);
 		contentPane.add(roomListPanel);
+		
+//		createRoomButton = new JButton("+");
+//		createRoomButton.setBounds(350,550,50,50);
+//		roomListPanel.add(createRoomButton);
 	}
 	
 	public void addActionListener() {
@@ -171,6 +208,9 @@ public class ChatClient extends JFrame {
 					userListPanel.setVisible(false);
 					roomListPanel.setVisible(true);
 				}
+				else if(createRoomButton.equals(e.getSource())) {
+					
+				}
 			}
 		};
 	}
@@ -179,7 +219,7 @@ public class ChatClient extends JFrame {
 	class ListenNetwork extends Thread {
 		public void run() {
 			while (true) {
-				try {
+				try {					
 					Object obcm = null;
 					String msg = null;
 					ChatMsg cm;
@@ -198,19 +238,20 @@ public class ChatClient extends JFrame {
 					} else
 						continue;
 					switch (cm.getCode()) {
-					case "200": // chat message
-						AppendText(msg);
-						break;
-					case "300": // Image 첨부
-						AppendText("[" + cm.getId() + "]");
-						AppendImage(cm.img);
-						break;
+						case "100":
+							System.out.println("enter chatting");
+							break;
+						case "200": // chat message
+							AppendText(msg);
+							break;
+						case "300": // Image 첨부
+							AppendText("[" + cm.getId() + "]");
+							AppendImage(cm.img);
+							break;
 					}
 				} catch (IOException e) {
 					AppendText("ois.readObject() error");
 					try {
-//						dos.close();
-//						dis.close();
 						ois.close();
 						oos.close();
 						socket.close();
@@ -225,42 +266,42 @@ public class ChatClient extends JFrame {
 		}
 	}
 
-	// keyboard enter key 치면 서버로 전송
-	class TextSendAction implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// Send button을 누르거나 메시지 입력하고 Enter key 치면
-			if (e.getSource() == btnSend || e.getSource() == txtInput) {
-				String msg = null;
-				// msg = String.format("[%s] %s\n", UserName, txtInput.getText());
-				msg = txtInput.getText();
-				SendMessage(msg);
-				txtInput.setText(""); // 메세지를 보내고 나면 메세지 쓰는창을 비운다.
-				txtInput.requestFocus(); // 메세지를 보내고 커서를 다시 텍스트 필드로 위치시킨다
-				if (msg.contains("/exit")) // 종료 처리
-					System.exit(0);
-			}
-		}
-	}
+//	// keyboard enter key 치면 서버로 전송
+//	class TextSendAction implements ActionListener {
+//		@Override
+//		public void actionPerformed(ActionEvent e) {
+//			// Send button을 누르거나 메시지 입력하고 Enter key 치면
+//			if (e.getSource() == btnSend || e.getSource() == txtInput) {
+//				String msg = null;
+//				// msg = String.format("[%s] %s\n", UserName, txtInput.getText());
+//				msg = txtInput.getText();
+//				SendMessage(msg);
+//				txtInput.setText(""); // 메세지를 보내고 나면 메세지 쓰는창을 비운다.
+//				txtInput.requestFocus(); // 메세지를 보내고 커서를 다시 텍스트 필드로 위치시킨다
+//				if (msg.contains("/exit")) // 종료 처리
+//					System.exit(0);
+//			}
+//		}
+//	}
 
-	class ImageSendAction implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// 액션 이벤트가 sendBtn일때 또는 textField 에세 Enter key 치면
-			if (e.getSource() == imgBtn) {
-				frame = new Frame("이미지첨부");
-				fd = new FileDialog(frame, "이미지 선택", FileDialog.LOAD);
-				// frame.setVisible(true);
-				// fd.setDirectory(".\\");
-				fd.setVisible(true);
-				//System.out.println(fd.getDirectory() + fd.getFile());
-				ChatMsg obcm = new ChatMsg(UserName, "300", "IMG");
-				ImageIcon img = new ImageIcon(fd.getDirectory() + fd.getFile());
-				obcm.setImg(img);
-				SendObject(obcm);
-			}
-		}
-	}
+//	class ImageSendAction implements ActionListener {
+//		@Override
+//		public void actionPerformed(ActionEvent e) {
+//			// 액션 이벤트가 sendBtn일때 또는 textField 에세 Enter key 치면
+//			if (e.getSource() == imgBtn) {
+//				frame = new Frame("이미지첨부");
+//				fd = new FileDialog(frame, "이미지 선택", FileDialog.LOAD);
+//				// frame.setVisible(true);
+//				// fd.setDirectory(".\\");
+//				fd.setVisible(true);
+//				//System.out.println(fd.getDirectory() + fd.getFile());
+//				ChatMsg obcm = new ChatMsg(UserName, "300", "IMG");
+//				ImageIcon img = new ImageIcon(fd.getDirectory() + fd.getFile());
+//				obcm.setImg(img);
+//				SendObject(obcm);
+//			}
+//		}
+//	}
 
 	ImageIcon icon1 = new ImageIcon("src/zzz.png");
 
@@ -273,8 +314,6 @@ public class ChatClient extends JFrame {
 
 	// 화면에 출력
 	public void AppendText(String msg) {
-		// textArea.append(msg + "\n");
-		//AppendIcon(icon1);
 		msg = msg.trim(); // 앞뒤 blank와 \n을 제거한다.
 		int len = textArea.getDocument().getLength();
 		// 끝으로 이동

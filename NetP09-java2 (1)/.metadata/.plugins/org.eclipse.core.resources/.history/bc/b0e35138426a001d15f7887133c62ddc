@@ -9,7 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 public class UserList extends JFrame{
-	public JButton applyButton;
+	public static JButton applyButton;
 	public static String selectedUserList = "";
 	public JCheckBox userCheckBox1;
 	public JCheckBox userCheckBox2;
@@ -55,6 +55,10 @@ public class UserList extends JFrame{
 		applyButton.addActionListener(listener);
 		panel.add(applyButton);
 		
+	}
+	
+	public static String getSelectedUserList() {
+		return selectedUserList;
 	}
 	
 	ActionListener listener = new ActionListener() {

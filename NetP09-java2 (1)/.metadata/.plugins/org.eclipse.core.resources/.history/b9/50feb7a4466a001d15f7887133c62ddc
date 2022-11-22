@@ -78,7 +78,7 @@ public class ChatClient extends JFrame {
 		contentPane.setLayout(null);
 		
 		makeTabBar(); // TabBar 구성하기
-		makeUserListPanel(username);
+		makeUserListPanel();
 		makeRoomListPanel();
 //		UserChatRoom userChatRoom = new UserChatRoom();
 //		textArea = UserChatRoom.textArea;
@@ -92,7 +92,7 @@ public class ChatClient extends JFrame {
 			ois = new ObjectInputStream(socket.getInputStream());
 
 			//SendMessage("/login " + UserName);
-			ChatMsg obcm = new ChatMsg(username, "100", "Hello");
+			ChatMsg obcm = new ChatMsg(UserName, "100", "Hello");
 			SendObject(obcm);
 			
 			ListenNetwork net = new ListenNetwork();
@@ -144,42 +144,42 @@ public class ChatClient extends JFrame {
         roomListButton.addActionListener(listener);
 	}
 	
-	public void makeUserListPanel(String username) {
+	public void makeUserListPanel() {
 		userListPanel = new JPanel();
 		userListPanel.setLayout(null);
 		contentPane.add(userListPanel);
 		userListPanel.setBounds(100, 0, 300, 600);
 
-		UserProfile user1 = new UserProfile(username); 
-//		UserProfile user2 = new UserProfile("youngjae");
-//		UserProfile user3 = new UserProfile("user3");
-//		UserProfile user4 = new UserProfile("user4");
-//		UserProfile user5 = new UserProfile("user5");
-//	
+		UserProfile user1 = new UserProfile("geniuus"); 
+		UserProfile user2 = new UserProfile("youngjae");
+		UserProfile user3 = new UserProfile("user3");
+		UserProfile user4 = new UserProfile("user4");
+		UserProfile user5 = new UserProfile("user5");
+	
 		userListPanel.add(user1);
 		user1.setLayout(null);
 		user1.setBounds(0,0,300,50);
 		user1.add(user1.profilePane);
 		
-//		userListPanel.add(user2);
-//		user2.setLayout(null);
-//		user2.setBounds(0,60,300,50);
-//		user2.add(user2.profilePane);
-//
-//		userListPanel.add(user3);
-//		user3.setLayout(null);
-//		user3.setBounds(0,120,300,50);
-//		user3.add(user3.profilePane);
-//		
-//		userListPanel.add(user4);
-//		user4.setLayout(null);
-//		user4.setBounds(0,180,300,50);
-//		user4.add(user4.profilePane);
-//		
-//		userListPanel.add(user5);
-//		user5.setLayout(null);
-//		user5.setBounds(0,240,300,50);
-//		user5.add(user5.profilePane);
+		userListPanel.add(user2);
+		user2.setLayout(null);
+		user2.setBounds(0,60,300,50);
+		user2.add(user2.profilePane);
+
+		userListPanel.add(user3);
+		user3.setLayout(null);
+		user3.setBounds(0,120,300,50);
+		user3.add(user3.profilePane);
+		
+		userListPanel.add(user4);
+		user4.setLayout(null);
+		user4.setBounds(0,180,300,50);
+		user4.add(user4.profilePane);
+		
+		userListPanel.add(user5);
+		user5.setLayout(null);
+		user5.setBounds(0,240,300,50);
+		user5.add(user5.profilePane);
 	}
 	
 	public void makeRoomListPanel() {

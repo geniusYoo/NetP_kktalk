@@ -119,17 +119,17 @@ public class ChatClient extends JFrame {
 		roomListButton = new JButton("");
 		tabBarPanel.add(roomListButton);
 		
-		ImageIcon personIcon = new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/icon/person.png");
+		ImageIcon personIcon = new ImageIcon("/Users/kimjw/Desktop/JavaChatImg/icon/person.png");
         Image personImg = personIcon.getImage();
         Image updatePersonImg = personImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         ImageIcon updatePersonIcon = new ImageIcon(updatePersonImg);
         
-        ImageIcon chatIcon = new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/icon/chat.png");
+        ImageIcon chatIcon = new ImageIcon("/Users/kimjw/Desktop/JavaChatImg/icon/chat.png");
         Image chatImg = chatIcon.getImage();
         Image updateChatImg = chatImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         ImageIcon updateChatIcon = new ImageIcon(updateChatImg);
         
-        ImageIcon exitIcon = new ImageIcon("/Users/geniuus/Downloads/JavaChatImg/icon/exit.png");
+        ImageIcon exitIcon = new ImageIcon("/Users/kimjw/Desktop/JavaChatImg/icon/exit.png");
         Image exitImg = exitIcon.getImage();
         Image updateExitImg = exitImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         ImageIcon updateExitIcon = new ImageIcon(updateExitImg);
@@ -144,20 +144,44 @@ public class ChatClient extends JFrame {
 	}
 	
 	public void makeUserListPanel() {
-		userListPanel = new JPanel();
-		userListPanel.setLayout(null);
-		userListPanel.setBounds(100, 0, 300, 600);
-		contentPane.add(userListPanel);
-		
-		UserProfile userProfile = new UserProfile();
-		userProfile.setBounds(0,0,300,70);
-		userListPanel.add(userProfile);
+//		userListPanel = new JPanel();
+//		userListPanel.setLayout(null);
+//		userListPanel.setBounds(100, 0, 300, 600);
+//		contentPane.add(userListPanel);
+//		
+//		UserProfile userProfile = new UserProfile();
+//		userProfile.setBounds(0,0,300,70);
+//		userListPanel.add(userProfile);
 	}
 	
 	public void makeRoomListPanel() {
 		roomListPanel = new JPanel();
-		roomListPanel.setBounds(100, 0, 300, 602);
+		roomListPanel.setBounds(100, 0, 300, 600);
+		roomListPanel.setLayout(null);
 		contentPane.add(roomListPanel);
+		
+		JLabel lblChatLabel = new JLabel("채팅");
+		lblChatLabel.setBounds(20, 20, 50, 40);
+		lblChatLabel.setFont(new Font("D2Coding",Font.BOLD, 20));
+		roomListPanel.add(lblChatLabel);
+		
+		// 새로운 채팅 만드는 버튼 만들기 
+		JButton makeChatButton = new JButton("");
+		makeChatButton.setBounds(230, 20, 50, 40);
+		ImageIcon chatIcon = new ImageIcon("/Users/kimjw/Desktop/JavaChatImg/icon/plus_chat.png");
+        Image chatImg = chatIcon.getImage();
+        Image updateChatImg = chatImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+        ImageIcon updateChatIcon = new ImageIcon(updateChatImg);
+        makeChatButton.setIcon(updateChatIcon);
+        makeChatButton.setBorderPainted(false);
+        makeChatButton.setContentAreaFilled(false);
+		roomListPanel.add(makeChatButton);
+		
+		// roomList 보여주기 높이 70부터 
+		UserRoom userRoom = new UserRoom();
+		userRoom.setBounds(5,70,290,50);
+		roomListPanel.add(userRoom);
+		
 	}
 	
 	public void addActionListener() {

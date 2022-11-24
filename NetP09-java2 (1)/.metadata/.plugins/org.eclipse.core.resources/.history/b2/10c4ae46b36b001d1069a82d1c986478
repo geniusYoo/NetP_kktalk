@@ -117,7 +117,7 @@ public class ChatClient extends JFrame {
 		tabBarPanel = new JPanel();
 		tabBarPanel.setLayout(new GridLayout(8, 1, 0, 0));
 		tabBarPanel.setBounds(0, 0, 100, 602);
-		tabBarPanel.setBackground(new Color(220, 220, 220));
+		tabBarPanel.setBackground(new Color(238,238,238));
 		contentPane.add(tabBarPanel);
 		
 		userListButton = new JButton("");

@@ -36,9 +36,6 @@ import java.awt.Component;
 
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
-
-import org.w3c.dom.css.RGBColor;
-
 import javax.swing.JToggleButton;
 import javax.swing.JList;
 
@@ -117,7 +114,6 @@ public class ChatClient extends JFrame {
 		tabBarPanel = new JPanel();
 		tabBarPanel.setLayout(new GridLayout(8, 1, 0, 0));
 		tabBarPanel.setBounds(0, 0, 100, 602);
-		tabBarPanel.setBackground(new Color(220, 220, 220));
 		contentPane.add(tabBarPanel);
 		
 		userListButton = new JButton("");

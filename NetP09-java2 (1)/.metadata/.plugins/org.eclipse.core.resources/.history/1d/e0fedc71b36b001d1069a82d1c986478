@@ -27,10 +27,10 @@ public class UserProfile extends JPanel{
 		
 		profileImageLabel = new JLabel("");
 		profileImageLabel.setIcon(new ImageIcon(UserProfile.class.getResource("/icons/default_profile.jpeg")));       
-		profileImageLabel.setBounds(10,0,50,50);
+		profileImageLabel.setBounds(5,0,50,50);
         
         profileNameLabel = new JLabel(username);
-        profileNameLabel.setBounds(70,0,240,50);
+        profileNameLabel.setBounds(65,0,240,50);
         
 		profilePane.setLayout(null);
 		

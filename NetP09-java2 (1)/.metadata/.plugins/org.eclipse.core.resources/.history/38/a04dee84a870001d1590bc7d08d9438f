@@ -192,15 +192,15 @@ public class ChatClient extends JFrame {
 		lblLabel.setFont(new Font("D2Coding",Font.PLAIN, 15));
 		myProfilePanel.add(lblLabel);
 		
-		othersProfilePanel = new JPanel();
-		othersProfilePanel.setLayout(new GridLayout(8,1));
-		othersProfilePanel.setBounds(0,170,300,440);
-		userListPanel.add(othersProfilePanel);
-
+		
 	}
 	
 	public void updateProfile(String username) {
-			
+		othersProfilePanel = new JPanel();
+		othersProfilePanel.setLayout(new GridLayout(8,1));
+		
+//		othersProfilePanel.setBounds(0,170,300,440);
+		
 		UserProfile otherUser = new UserProfile(username);
 		System.out.println(">>>>>> "+username);
 		othersProfilePanel.add(otherUser);
@@ -209,6 +209,9 @@ public class ChatClient extends JFrame {
 		otherUser.setBounds(0,170,300,440);
 
 		otherUser.add(otherUser.profilePane);	
+		userListPanel.add(othersProfilePanel);
+
+//		othersProfilePanel.revalidate();
 		userListPanel.revalidate();
 	}
 	

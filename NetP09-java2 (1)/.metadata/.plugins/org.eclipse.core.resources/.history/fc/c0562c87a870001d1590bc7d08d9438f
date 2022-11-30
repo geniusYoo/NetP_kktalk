@@ -195,8 +195,6 @@ public class ChatClient extends JFrame {
 		othersProfilePanel = new JPanel();
 		othersProfilePanel.setLayout(new GridLayout(8,1));
 		othersProfilePanel.setBounds(0,170,300,440);
-		userListPanel.add(othersProfilePanel);
-
 	}
 	
 	public void updateProfile(String username) {
@@ -209,6 +207,9 @@ public class ChatClient extends JFrame {
 		otherUser.setBounds(0,170,300,440);
 
 		otherUser.add(otherUser.profilePane);	
+		userListPanel.add(othersProfilePanel);
+
+//		othersProfilePanel.revalidate();
 		userListPanel.revalidate();
 	}
 	

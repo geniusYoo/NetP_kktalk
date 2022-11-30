@@ -1,4 +1,5 @@
 import java.awt.EventQueue;
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -7,10 +8,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 
-public class UserList extends JFrame{
+public class UserList extends JDialog{
 	public JButton applyButton;
-	public static String selectedUserList = "";
+	public String selectedUserList = "";
+	public JPanel panel;
 	public JCheckBox userCheckBox1;
 	public JCheckBox userCheckBox2;
 	public JCheckBox userCheckBox3;
@@ -18,9 +21,11 @@ public class UserList extends JFrame{
 	public JCheckBox userCheckBox5;
 	public StringBuilder sb = new StringBuilder();
 	
-	public UserList() {
+	public UserList(ChatClient frame, String title) {
+		super(frame,title,true);
+		setVisible(false);
 		setBounds(100,100,450,300);
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setBounds(0,0,450,300);
 
 		panel.setLayout(null);
@@ -52,30 +57,36 @@ public class UserList extends JFrame{
 		
 		applyButton = new JButton("apply");
 		applyButton.setBounds(380,210,50,40);
-		applyButton.addActionListener(listener);
 		panel.add(applyButton);
+		
+		applyButton.addActionListener(new ActionListener() {	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(applyButton.equals(e.getSource())) {		
+					if(userCheckBox1.isSelected() == true)
+						sb.append("user1");
+					if(userCheckBox2.isSelected() == true)
+						sb.append(" user2");
+					if(userCheckBox3.isSelected() == true)
+						sb.append(" user3");
+					if(userCheckBox4.isSelected() == true)
+						sb.append(" user4");
+					if(userCheckBox5.isSelected() == true)
+						sb.append(" user5");
+					selectedUserList = sb.toString();
+					setVisible(false);		
+				}				
+			}
+		});
 		
 	}
 	
-	ActionListener listener = new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			if(applyButton.equals(e.getSource())) {		
-				if(userCheckBox1.isSelected() == true)
-					sb.append("user1");
-				if(userCheckBox2.isSelected() == true)
-					sb.append(" user2");
-				if(userCheckBox3.isSelected() == true)
-					sb.append(" user3");
-				if(userCheckBox4.isSelected() == true)
-					sb.append(" user4");
-				if(userCheckBox5.isSelected() == true)
-					sb.append(" user5");
-				selectedUserList = sb.toString();
-				System.out.println("****************userList:" + selectedUserList);
-				dispose();
-			}
-			
-		}
-	};
+	
+
+	public String showDialog() {
+		if(selectedUserList == null) return null;
+		else return selectedUserList;		
+	}
+	
 	
 }

@@ -19,6 +19,8 @@ public class UserChatRoom extends JFrame{
 	private JLabel chatLabel;
 	private JLabel timeLabel;
 	
+	private JPanel inputPanel;
+	
 	public static JTextPane textArea;
 	public static JTextField txtInput;
 	private JButton sendButton;
@@ -38,10 +40,15 @@ public class UserChatRoom extends JFrame{
 		
 		chattingPanel = new JScrollPane();
 		chattingPanel.setLayout(null);
-		chattingPanel.setBounds(0,50,400,580);
+		chattingPanel.setBounds(0,50,400,530);
+		
+		inputPanel = new JPanel();
+		inputPanel.setLayout(null);
+		inputPanel.setBounds(0,580,400,65);
 		
 		totalPanel.add(roomInfoPanel);
 		totalPanel.add(chattingPanel);
+		totalPanel.add(inputPanel);
 		
 		roomInfoImageLabel = new JLabel("image");
 		roomInfoNameLabel = new JLabel("name");

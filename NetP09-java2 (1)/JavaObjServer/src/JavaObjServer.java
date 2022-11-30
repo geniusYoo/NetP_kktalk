@@ -5,7 +5,8 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
+import javax.swing.plaf.synth.SynthFormattedTextFieldUI;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
@@ -22,7 +23,9 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.PublicKey;
 import java.util.Vector;
+import java.util.jar.Attributes.Name;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
 
@@ -36,6 +39,7 @@ public class JavaObjServer extends JFrame {
 	private ServerSocket socket; // 서버소켓
 	private Socket client_socket; // accept() 에서 생성된 client 소켓
 	private Vector UserVec = new Vector(); // 연결된 사용자를 저장할 벡터
+	private Vector LoggedUserVec = new Vector();
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 
 	public static void main(String[] args) {
@@ -151,6 +155,7 @@ public class JavaObjServer extends JFrame {
 		private Vector<String> username_vc = new Vector<>();
 		public String UserName = "";
 		public String UserStatus;
+		public String loggedName = "";
 
 		
 		public UserService(Socket client_socket) {
@@ -174,13 +179,28 @@ public class JavaObjServer extends JFrame {
 		public void Login() {
 			AppendText("새로운 참가자 " + UserName + " 입장.");
 			String msg = UserName;
+			LoggedUserVec.add(msg);
+			System.out.println(">>>>>>>>UserName "+UserName);
+			for(int k=0;k<LoggedUserVec.size();k++) {
+				System.out.println(">>>>>>> LoggedUserVec "+ LoggedUserVec.elementAt(k));
+			}
 			WriteOthers(msg); // 아직 user_vc에 새로 입장한 user는 포함되지 않았다.
-			System.out.println("user_vc: " + UserVec.elementAt(0));
-			if(user_vc.size() > 1) {
-				for(int i=user_vc.size()-2; i>=0; i--) {
-					MakeProfile(username_vc.elementAt(i));
+//			System.out.println("user_vc: " + UserVec.elementAt(0));
+//			if(user_vc.size() > 1) {
+//				for(int i=user_vc.size()-2; i>=0; i--) {
+//					System.out.println(">>>>>>>username_vc.elementAt(i) "+username_vc.elementAt(i));
+//					MakeProfile(username_vc.elementAt(i));
+//				}
+//			}
+			for (int j=0;j<LoggedUserVec.size();j++) {
+				if(!LoggedUserVec.elementAt(j).equals(UserName)){
+					loggedName = (String) LoggedUserVec.elementAt(j);
+					ChatMsg obcm = new ChatMsg("SERVER", "101", loggedName);
+					System.out.println(">>>>>>>>>>>>>>> loggedName " + loggedName);
+					WriteOneObject(obcm);
 				}
 			}
+			
 		}
 
 		public void Logout() {
@@ -207,7 +227,7 @@ public class JavaObjServer extends JFrame {
 			}
 		}
 
-		// 나를 제외한 User들에게 방송. 각각의 UserService Thread의 WriteONe() 을 호출한다.
+		// 나를 제외한 User들에게 방송. 각각의 UserService Thread의 WriteOne() 을 호출한다.
 		public void WriteOthers(String str) {
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
@@ -217,7 +237,7 @@ public class JavaObjServer extends JFrame {
 			}
 		}
 		
-		// 새로운 참가자가 로그인할 때 나를 제외한 참가자들에게 프로필을 만들라고 지시하는 함수.
+		// 새로운 참가자가 로그인할 때 새로운 참가자를 제외한 참가자들에게 새로운 참가자의 프로필을 만들라고 지시하는 함수.
 		public void MakeProfile(String msg) {
 			try {
 				ChatMsg obcm = new ChatMsg("SERVER", "101", msg);
@@ -401,12 +421,24 @@ public class JavaObjServer extends JFrame {
 							//WriteAll(msg + "\n"); // Write All
 							WriteAllObject(cm);
 						}
-					} else if (cm.getCode().matches("400")) { // logout message 처리
+					} else if (cm.getCode().matches("201")) { // 이미지 전송
+						WriteAllObject(cm);
+					} else if (cm.getCode().matches("300")) { // plus_chat 버튼을 눌러서 방을 생성 (create room)
+						
+					} else if (cm.getCode().matches("301")) { // 만든 방을 삭제하기 (remove room)
+						
+					} else if (cm.getCode().matches("400")) { // roomList에 있는 방 중 하나를 들어가기 (띄우기) (enter room)
+						
+					} else if (cm.getCode().matches("401")) { // 방을 퇴장 (exit room)
+						
+					} else if (cm.getCode().matches("500")) { // 방에 친구를 초대
+						
+					}
+					
+					else if (cm.getCode().matches("600")) { // Exit 처리 (완전히 나가기)
 						Logout();
 						break;
-					} else if (cm.getCode().matches("300")) {
-						WriteAllObject(cm);
-					}
+					} 
 				} catch (IOException e) {
 					AppendText("ois.readObject() error");
 					try {

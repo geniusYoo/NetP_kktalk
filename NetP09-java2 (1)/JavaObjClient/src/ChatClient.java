@@ -60,14 +60,16 @@ public class ChatClient extends JFrame {
 
 	// TabBar 구성하는 변수들
 	private JPanel tabBarPanel;
-	private JPanel userListPanel;
+	public JPanel userListPanel;
 	private JPanel roomListPanel;
-	private JPanel othersProfilePanel;
-	private JButton userListButton;
+	public JPanel othersProfilePanel;
+	public JButton userListButton;
 	private JButton roomListButton;
 	private JButton exitButton;
 	private JButton makeChatButton;
 		
+	private UserList userList;
+	private String selectedUserList;
 	JTextPane textArea;
 	JTextField textInput;
 	
@@ -84,6 +86,11 @@ public class ChatClient extends JFrame {
 
 //		makeChatButton.setVisible(false);
 
+		makeTabBar(); // TabBar 구성하기
+		makeUserListPanel(username);
+		makeRoomListPanel();
+		roomListPanel.setVisible(false);
+		
 		try {
 			socket = new Socket(ip_addr, Integer.parseInt(port_no));
 
@@ -107,10 +114,7 @@ public class ChatClient extends JFrame {
 			AppendText("connect error");
 		}
 		
-		makeTabBar(); // TabBar 구성하기
-		makeUserListPanel(username);
-		makeRoomListPanel();
-		roomListPanel.setVisible(false);
+	
 		
 	}
 	public void makeTabBar() {
@@ -187,19 +191,25 @@ public class ChatClient extends JFrame {
 		lblLabel.setBounds(20, 130, 100, 40);
 		lblLabel.setFont(new Font("D2Coding",Font.PLAIN, 15));
 		myProfilePanel.add(lblLabel);
-
-		othersProfilePanel = new JPanel();
-		othersProfilePanel.setLayout(new GridLayout(8,1));
-		userListPanel.add(othersProfilePanel);
-		othersProfilePanel.setBounds(0,170,300,440);	
+		
+		
 	}
 	
-	public void updateProfile(String username) {		
+	public void updateProfile(String username) {
+		othersProfilePanel = new JPanel();
+		othersProfilePanel.setLayout(new GridLayout(8,1));
+		
+		othersProfilePanel.setBounds(0,170,300,440);
+		
 		UserProfile otherUser = new UserProfile(username);
+		System.out.println(">>>>>> "+username);
 		othersProfilePanel.add(otherUser);
+		System.out.println(">>>> add success "+username);
 		otherUser.setLayout(null);
 		otherUser.add(otherUser.profilePane);	
-		othersProfilePanel.revalidate();
+		userListPanel.add(othersProfilePanel);
+
+//		othersProfilePanel.revalidate();
 		userListPanel.revalidate();
 	}
 	
@@ -246,9 +256,18 @@ public class ChatClient extends JFrame {
 				roomListPanel.setVisible(true);
 			}
 			else if(makeChatButton.equals(e.getSource())) {
-				UserList userList = new UserList();
 				userList.setVisible(true);
-			}
+ 				selectedUserList = userList.showDialog();
+ 				// userList Dialog 띄우고 선택되면 방 만들어달라고 서버에게 요청
+ 				String msg = "userlist = " + selectedUserList;
+ 				ChatMsg obcm = new ChatMsg(UserName, "300", msg);
+ 				try {
+					oos.writeObject(obcm);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+ 			}
 			
 		}
 	};

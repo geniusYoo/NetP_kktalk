@@ -103,7 +103,7 @@ public class UserRoom extends JPanel{
 		roomLastTimeLabel = new JLabel(getTime(new Date()));
 		roomLastTimeLabel.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 9));
 		roomLastTimeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		roomLastTimeLabel.setBounds(222,2,52,15);
+		roomLastTimeLabel.setBounds(242,2,52,15);
 		add(roomLastTimeLabel);
 		
 		setVisible(true);

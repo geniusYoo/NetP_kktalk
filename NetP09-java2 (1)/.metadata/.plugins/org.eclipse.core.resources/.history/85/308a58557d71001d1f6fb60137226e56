@@ -273,9 +273,8 @@ public class ChatClient extends JFrame {
 	
 	public void updateRoomList(UserRoom userRoom) {
 		userRoomVector.add(userRoom);
-		userRoom.setBounds(0,70,300,60);
-		System.out.println("userRoom.username >>>> " + userRoom.username);
-		userRoom.chatRoomNameButton.setText(userRoom.userList);
+		userRoom.setBounds(0,60,300,50);
+		userRoom.chatRoomNameButton.setText(userRoom.username);
 		roomListPanel.add(userRoom);
 
 		roomListPanel.revalidate();

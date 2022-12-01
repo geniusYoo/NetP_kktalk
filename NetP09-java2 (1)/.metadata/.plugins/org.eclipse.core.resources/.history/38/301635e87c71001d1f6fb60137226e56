@@ -273,9 +273,8 @@ public class ChatClient extends JFrame {
 	
 	public void updateRoomList(UserRoom userRoom) {
 		userRoomVector.add(userRoom);
-		userRoom.setBounds(0,70,300,60);
-		System.out.println("userRoom.username >>>> " + userRoom.username);
-		userRoom.chatRoomNameButton.setText(userRoom.userList);
+		userRoom.setBounds(0,60,300,50);
+		userRoom.chatRoomNameButton.setText(userRoom.username);
 		roomListPanel.add(userRoom);
 
 		roomListPanel.revalidate();
@@ -349,7 +348,7 @@ public class ChatClient extends JFrame {
 							break;
 						case "301": // 서버에서 방을 만들어서 room_id를 내려줌
 							System.out.println("Create Room --");
-							UserRoom userRoom = new UserRoom(chatClient, userIcon, UserName, cm.room_id, cm.userList, "채팅방이 생성되었습니다.", " ");
+							UserRoom userRoom = new UserRoom(chatClient, userIcon, UserName, cm.room_id, cm.userList, " ", " ");
 							updateRoomList(userRoom);
 
 					}

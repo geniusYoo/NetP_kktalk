@@ -55,8 +55,8 @@ public class UserRoom extends JPanel{
 			}
 		});
 		setBorder(null);
-		setPreferredSize(new Dimension(300,62));
-		setBackground(Color.LIGHT_GRAY);
+		setPreferredSize(new Dimension(235,52));
+//		setBackground(Color.WHITE);
 		setLayout(null);
 		
 		String [] users = this.userList.split(" ");
@@ -103,7 +103,7 @@ public class UserRoom extends JPanel{
 		roomLastTimeLabel = new JLabel(getTime(new Date()));
 		roomLastTimeLabel.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 9));
 		roomLastTimeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		roomLastTimeLabel.setBounds(222,2,52,15);
+		roomLastTimeLabel.setBounds(146,1,77,15);
 		add(roomLastTimeLabel);
 		
 		setVisible(true);

@@ -55,23 +55,22 @@ public class UserRoom extends JPanel{
 			}
 		});
 		setBorder(null);
-		setPreferredSize(new Dimension(300,62));
-		setBackground(Color.LIGHT_GRAY);
+		setPreferredSize(new Dimension(235,52));
+		setBackground(Color.WHITE);
 		setLayout(null);
 		
-		String [] users = this.userList.split(" ");
+		String [] users = userList.split(" ");
 		String label = users[0];
 		for(int i=1; i<users.length; i++) {
 			label += (", " + users[i]);
 		}
 		roomImageLabel = new JLabel("");
 		roomImageLabel.setBorder(null);
-		roomImageLabel.setBackground(Color.LIGHT_GRAY);
+		roomImageLabel.setBackground(Color.WHITE);
 		roomImageLabel.setBounds(2, 1, 50, 50);
 		add(roomImageLabel);
 		
 		chatRoomNameButton = new JButton(label);
-		chatRoomNameButton.setBounds(55,1,80,15);
 		chatRoomNameButton.setOpaque(false);
 		chatRoomNameButton.setFocusPainted(false);
 		chatRoomNameButton.addActionListener(new ActionListener() {			
@@ -87,7 +86,7 @@ public class UserRoom extends JPanel{
 			}
 		});
 		chatRoomNameButton.setHorizontalAlignment(SwingConstants.LEFT);
-		chatRoomNameButton.setBackground(Color.LIGHT_GRAY);
+		chatRoomNameButton.setBackground(Color.WHITE);
 		chatRoomNameButton.setHorizontalAlignment(SwingConstants.LEFT);		
 		chatRoomNameButton.setBorder(null);
 		add(chatRoomNameButton);
@@ -96,14 +95,14 @@ public class UserRoom extends JPanel{
 		roomLastChatLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		roomLastChatLabel.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
 		roomLastChatLabel.setBorder(null);
-		roomLastChatLabel.setBackground(Color.LIGHT_GRAY);
+		roomLastChatLabel.setBackground(Color.WHITE);
 		roomLastChatLabel.setBounds(64,29,148,16);
 		add(roomLastChatLabel);
 		
 		roomLastTimeLabel = new JLabel(getTime(new Date()));
 		roomLastTimeLabel.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 9));
 		roomLastTimeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		roomLastTimeLabel.setBounds(222,2,52,15);
+		roomLastTimeLabel.setBounds(146,1,77,15);
 		add(roomLastTimeLabel);
 		
 		setVisible(true);

@@ -55,8 +55,8 @@ public class UserRoom extends JPanel{
 			}
 		});
 		setBorder(null);
-		setPreferredSize(new Dimension(300,62));
-		setBackground(Color.LIGHT_GRAY);
+		setPreferredSize(new Dimension(235,52));
+		setBackground(Color.GREEN);
 		setLayout(null);
 		
 		String [] users = this.userList.split(" ");
@@ -66,7 +66,7 @@ public class UserRoom extends JPanel{
 		}
 		roomImageLabel = new JLabel("");
 		roomImageLabel.setBorder(null);
-		roomImageLabel.setBackground(Color.LIGHT_GRAY);
+		roomImageLabel.setBackground(Color.GREEN);
 		roomImageLabel.setBounds(2, 1, 50, 50);
 		add(roomImageLabel);
 		
@@ -87,7 +87,7 @@ public class UserRoom extends JPanel{
 			}
 		});
 		chatRoomNameButton.setHorizontalAlignment(SwingConstants.LEFT);
-		chatRoomNameButton.setBackground(Color.LIGHT_GRAY);
+		chatRoomNameButton.setBackground(Color.GREEN);
 		chatRoomNameButton.setHorizontalAlignment(SwingConstants.LEFT);		
 		chatRoomNameButton.setBorder(null);
 		add(chatRoomNameButton);
@@ -96,14 +96,14 @@ public class UserRoom extends JPanel{
 		roomLastChatLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		roomLastChatLabel.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));
 		roomLastChatLabel.setBorder(null);
-		roomLastChatLabel.setBackground(Color.LIGHT_GRAY);
+		roomLastChatLabel.setBackground(Color.GREEN);
 		roomLastChatLabel.setBounds(64,29,148,16);
 		add(roomLastChatLabel);
 		
 		roomLastTimeLabel = new JLabel(getTime(new Date()));
 		roomLastTimeLabel.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 9));
 		roomLastTimeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		roomLastTimeLabel.setBounds(222,2,52,15);
+		roomLastTimeLabel.setBounds(146,1,77,15);
 		add(roomLastTimeLabel);
 		
 		setVisible(true);

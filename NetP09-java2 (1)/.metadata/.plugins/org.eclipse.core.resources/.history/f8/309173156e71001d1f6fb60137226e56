@@ -73,11 +73,11 @@ public class ChatClient extends JFrame {
 	JTextField textInput;
 	
 	public JDialog userDialog;
-	private Vector<String> userVector = new Vector<>();
+	private Vector<String> userVector = new Vector();
 	private String [] users  = null;
 	public ImageIcon userIcon;
 	public UserList userList;
-	public Vector<UserRoom> userRoomVector = new Vector<>();
+	public String room_id;
 	
 	public ChatClient(String username, String ip_addr, String port_no) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -131,7 +131,6 @@ public class ChatClient extends JFrame {
  				// userList Dialog 띄우고 선택되면 방 만들어달라고 서버에게 요청
  				String msg = "userlist = " + selectedUserList;
  				ChatMsg obcm = new ChatMsg(UserName, "300", msg);
- 				
  				try {
 					oos.writeObject(obcm);
 				} catch (IOException e1) {
@@ -237,17 +236,6 @@ public class ChatClient extends JFrame {
 		userListPanel.revalidate();
 	}
 	
-	public void deleteProfile(String username) {
-		for(int i = 0;i<userVector.size();i++) {
-			if(userVector.elementAt(i).equals(username)) {
-				othersProfilePanel.remove(i-1);
-				userVector.removeElementAt(i);
-				break;
-			}
-		}
-		othersProfilePanel.revalidate();
-	}
-	
 	public void makeRoomListPanel() {
 		roomListPanel = new JPanel();
 		roomListPanel.setBounds(100, 0, 300, 600);
@@ -316,11 +304,7 @@ public class ChatClient extends JFrame {
 						break;
 					if (obcm instanceof ChatMsg) {
 						cm = (ChatMsg) obcm;
-						if(cm.getRoomId() == null)
-							msg = String.format("[%s] %s", cm.getId(), cm.getData());
-						else {
-							msg = String.format("[%s] room_id: %s, userlist: %s", cm.getId(), cm.getRoomId(), cm.getUserList());
-						}
+						msg = String.format("[%s] %s", cm.getId(), cm.getData());
 					} else
 						continue;
 					switch (cm.getCode()) {
@@ -333,12 +317,6 @@ public class ChatClient extends JFrame {
 							updateProfile(cm.getData());
 							userVector.add(cm.getData());
 							break;
-						case "102": // Logout User (delete profile)
-							System.out.println("102");
-							System.out.println(cm.getData());
-							
-							System.out.println(">>> userVector.size "+userVector.size());
-							deleteProfile(cm.getData());
 						case "200": // chat message
 							System.out.println("chat msg");
 							break;
@@ -346,10 +324,6 @@ public class ChatClient extends JFrame {
 							AppendText("[" + cm.getId() + "]");
 							AppendImage(cm.img);
 							break;
-						case "301": // 서버에서 방을 만들어서 room_id를 내려줌
-							System.out.println("Create Room --");
-							
-
 					}
 				} catch (IOException e) {
 					AppendText("ois.readObject() error");

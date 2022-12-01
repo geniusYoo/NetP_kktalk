@@ -39,15 +39,8 @@ public class ChatMsgLabel extends JPanel {
 		chatPane = new JTextPane();
 		chatPane.setBackground(Color.WHITE);
 		chatPane.setBorder(null);
-		chatPane.setBounds(60, 24, 220, 20);
+		chatPane.setBounds(60, 24, 160, 20);
 		add(chatPane);
-		
-		userTimeLabel = new JLabel("13:30");
-		userTimeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		userTimeLabel.setBackground(Color.WHITE);
-		userTimeLabel.setBorder(null);
-		userTimeLabel.setBounds(300, 24, 50, 20);
-		add(userTimeLabel);
 	}
 
 }

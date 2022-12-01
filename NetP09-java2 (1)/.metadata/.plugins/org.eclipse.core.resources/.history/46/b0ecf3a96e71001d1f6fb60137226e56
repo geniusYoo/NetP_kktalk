@@ -156,7 +156,6 @@ public class JavaObjServer extends JFrame {
 		public String UserName = "";
 		public String UserStatus;
 		public String loggedName = "";
-		public String logoutName = "";
 
 		
 		public UserService(Socket client_socket) {
@@ -198,7 +197,6 @@ public class JavaObjServer extends JFrame {
 					loggedName = (String) LoggedUserVec.elementAt(j);
 					ChatMsg obcm = new ChatMsg("SERVER", "101", loggedName);
 					System.out.println(">>>>>>>>>>>>>>> loggedName " + loggedName);
-					System.out.println(">>>>> LoggedUserVec의 크기는 "+LoggedUserVec.size());
 					WriteOneObject(obcm);
 				}
 			}
@@ -210,18 +208,6 @@ public class JavaObjServer extends JFrame {
 			UserVec.removeElement(this); // Logout한 현재 객체를 벡터에서 지운다
 			WriteAll(msg); // 나를 제외한 다른 User들에게 전송
 			AppendText("사용자 " + "[" + UserName + "] 퇴장. 현재 참가자 수 " + UserVec.size());
-			logoutName = UserName;
-			for (int k=0;k<LoggedUserVec.size();k++) {
-				if(LoggedUserVec.elementAt(k).equals(UserName)) {
-					System.out.println(">>>>> logout username "+ UserName);
-					LoggedUserVec.remove(k);
-					System.out.println(">>>>> LoggedUserVec size "+LoggedUserVec.size());
-					break;
-				}else {
-					ChatMsg obcm = new ChatMsg("SERVER","102",logoutName);
-					WriteAllObject(obcm);
-				}
-			}
 		}
 
 		// 모든 User들에게 방송. 각각의 UserService Thread의 WriteONe() 을 호출한다.

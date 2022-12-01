@@ -24,6 +24,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Font;
@@ -66,13 +67,18 @@ public class ChatClient extends JFrame {
 	private JButton roomListButton;
 	private JButton exitButton;
 	private JButton makeChatButton;
-		
+	
 	private String selectedUserList;
 	JTextPane textArea;
 	JTextField textInput;
-	private UserList userList;
+	
+	public JDialog userDialog;
 	private Vector<String> userVector = new Vector();
 	private String [] users  = null;
+	public ImageIcon userIcon;
+	public UserList userList;
+	public String room_id;
+	
 	public ChatClient(String username, String ip_addr, String port_no) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 400, 630);
@@ -89,8 +95,7 @@ public class ChatClient extends JFrame {
 		makeUserListPanel(username);
 		makeRoomListPanel();
 		
-		userList = new UserList(this, "dialog");
-		userList.setVisible(false);
+		
 		
 		try {
 			socket = new Socket(ip_addr, Integer.parseInt(port_no));
@@ -118,14 +123,11 @@ public class ChatClient extends JFrame {
 		makeChatButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for(int i=0; i<userVector.size(); i++) {
-					userList.setUsers(userVector.elementAt(i));
-				}
-				
+				userList = new UserList(frame, "dialog");
+				userList.setVisible(false);
+				userList.setUsers(userVector);						
 				selectedUserList = userList.showDialog();
- 				for(int i=0; i<userVector.size(); i++) {
- 					System.out.println("hereis!@!!!!!!!!" +userVector.elementAt(i));
- 				}
+ 				
  				// userList Dialog 띄우고 선택되면 방 만들어달라고 서버에게 요청
  				String msg = "userlist = " + selectedUserList;
  				ChatMsg obcm = new ChatMsg(UserName, "300", msg);
@@ -266,6 +268,9 @@ public class ChatClient extends JFrame {
 		
 	}
 	
+	public ImageIcon getUserIcon(String username) {
+		return userIcon;
+	}
 	ActionListener listener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if(userListButton.equals(e.getSource())) {		

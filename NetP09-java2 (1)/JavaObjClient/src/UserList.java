@@ -8,6 +8,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.InterruptedIOException;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -20,18 +23,20 @@ import java.awt.GridLayout;
 
 public class UserList extends JDialog{
 	public JButton applyButton;
-	public String selectedUserList = "";
 	public JCheckBox userCheckBox;
 	public int num;
 	public String variable;
 	public StringBuilder sb = new StringBuilder();
+	public String selectedUserList;
+	public JCheckBox [] userCheckBoxs;
 	private JLabel label_1;
 	public Vector<String> users = new Vector<>();
+	public Vector<String> selectedUsers = new Vector<>();
 	public String state = null;
-	private JCheckBox [] userCheckBoxs;
 	public UserList(Frame frame, String title) {
 		
 		super(frame,title,true);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setBounds(0,0,400,400);;
 		getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
 		
@@ -46,31 +51,31 @@ public class UserList extends JDialog{
 		applyButton.setBounds(380,210,50,40);
 		
 
-//		applyButton.addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				if(userCheckBox.isSelected())
-//			}
-//		});
+		applyButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sb.append(userCheckBoxs[0].getText()); // 자신은 방에 무조건 포함되어야 하므로
+				selectedUserList = sb.toString();
+				setVisible(false);
+				
+			}
+		});
 		getContentPane().add(applyButton);
-		
-        setLocationRelativeTo(null);
-		
+        setLocationRelativeTo(null);		
 	}
 	
 	public void makeCheckbox(Vector<String> users) {
 		userCheckBoxs = new JCheckBox[users.size()];
-		for(int i=0; i<users.size(); i++) {
+		for(int i=0; i<users.size(); i++) {		
 			userCheckBoxs[i] = new JCheckBox(users.elementAt(i));
 			userCheckBoxs[i].addItemListener(new ItemListener() {			
 				@Override
-				public void itemStateChanged(ItemEvent e) {		
-					if(e.getItem() == userCheckBoxs[0]) {
-						System.out.println("0 : " + userCheckBoxs[1]);
-					}
-					if(e.getItem() == userCheckBoxs[1]) {
-						System.out.println("1 : " + userCheckBoxs[1]);
+				public void itemStateChanged(ItemEvent e) {
+					for(int k=0; k<users.size(); k++) {
+						if(e.getItem() == userCheckBoxs[k]) {
+							sb.append(userCheckBoxs[k].getText());
+							sb.append(" ");
+						}
 					}
 				}
 			});
@@ -79,17 +84,18 @@ public class UserList extends JDialog{
 	}
 
 	public String showDialog() {
-		
-		makeCheckbox(users);		
-		
+		makeCheckbox(users);
 		setVisible(true);
+
 		if(selectedUserList == null) return null;
 		else return selectedUserList;		
 	}
 	
-	public void setUsers(String users) {
-		this.users.add(users);			
-		
+	public void setUsers(Vector<String> users) {	
+		this.users.clear();
+		for(int i=0; i<users.size(); i++) {				
+			this.users.add(users.elementAt(i));
+		}
 	}
 	
 }

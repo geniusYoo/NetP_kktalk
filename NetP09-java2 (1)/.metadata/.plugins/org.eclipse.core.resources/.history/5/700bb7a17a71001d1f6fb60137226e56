@@ -40,7 +40,6 @@ public class JavaObjServer extends JFrame {
 	private Socket client_socket; // accept() 에서 생성된 client 소켓
 	private Vector UserVec = new Vector(); // 연결된 사용자를 저장할 벡터
 	private Vector LoggedUserVec = new Vector();
-	private Vector RoomVector = new Vector();
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 
 	public static void main(String[] args) {
@@ -158,10 +157,6 @@ public class JavaObjServer extends JFrame {
 		public String UserStatus;
 		public String loggedName = "";
 		public String logoutName = "";
-		public String room_id="";
-		public String room_userList="";
-		public Vector room_userVec = new Vector();
-		public int defaultRoomId=1234;
 
 		
 		public UserService(Socket client_socket) {
@@ -203,7 +198,7 @@ public class JavaObjServer extends JFrame {
 					loggedName = (String) LoggedUserVec.elementAt(j);
 					ChatMsg obcm = new ChatMsg("SERVER", "101", loggedName);
 					System.out.println(">>>>>>>>>>>>>>> loggedName " + loggedName);
-					System.out.println(">>>>> LoggedUserVec size :  "+LoggedUserVec.size());
+					System.out.println(">>>>> LoggedUserVec의 크기는 "+LoggedUserVec.size());
 					WriteOneObject(obcm);
 				}
 			}
@@ -228,31 +223,6 @@ public class JavaObjServer extends JFrame {
 				}
 			}
 		}
-		// 방을 만들자
-		public void makeChatRoom(String room_id, String room_userList) {
-			ChatRoom room = new ChatRoom(room_id, room_userList);
-			RoomVector.add(room);
-			System.out.println(">>> roomVec size : " + RoomVector.size());
-			String [] temp = null;
-			ChatMsg obcm = new ChatMsg("SERVER", "301", room_id, room_userList);
-			temp = room_userList.split(" ");
-			for(int a=0;a<temp.length;a++) {
-				System.out.println(">>>> what is temp : " + temp[a]);
-			}
-			for(int i=0;i<temp.length;i++) {
-				for(int k=0;k<user_vc.size();k++) {
-					UserService user = (UserService) user_vc.elementAt(k);
-					if(user.UserName.equals(temp[i])) {
-						user.WriteOneObject(obcm);
-					} else {
-						continue;
-					}
-				}
-			}
-			
-			
-			
-		}
 
 		// 모든 User들에게 방송. 각각의 UserService Thread의 WriteONe() 을 호출한다.
 		public void WriteAll(String str) {
@@ -275,6 +245,7 @@ public class JavaObjServer extends JFrame {
 		public void WriteOthers(String str) {
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
+				
 				if (user != this && user.UserStatus == "O") {
 					user.MakeProfile(str);
 				}
@@ -468,15 +439,6 @@ public class JavaObjServer extends JFrame {
 					} else if (cm.getCode().matches("201")) { // 이미지 전송
 						WriteAllObject(cm);
 					} else if (cm.getCode().matches("300")) { // plus_chat 버튼을 눌러서 방을 생성 (create room)
-						System.out.println(">>> who is cm "+cm.id);
-						System.out.println(">>> userlist of room "+cm.data);
-						defaultRoomId++;
-						room_id= String.valueOf(defaultRoomId);
-						room_userList=cm.data;
-						System.out.println(">> room_id : " + room_id + " userlist : " + room_userList);
-						makeChatRoom(room_id, room_userList);
-						
-						
 						
 					} else if (cm.getCode().matches("301")) { // 만든 방을 삭제하기 (remove room)
 						

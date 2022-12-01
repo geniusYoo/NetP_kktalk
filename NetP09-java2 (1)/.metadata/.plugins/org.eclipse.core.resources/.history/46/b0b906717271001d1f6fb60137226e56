@@ -78,7 +78,6 @@ public class ChatClient extends JFrame {
 	public ImageIcon userIcon;
 	public UserList userList;
 	public Vector<UserRoom> userRoomVector = new Vector<>();
-	ChatClient chatClient;
 	
 	public ChatClient(String username, String ip_addr, String port_no) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -89,13 +88,15 @@ public class ChatClient extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		frame = this;
-		UserName = username;
+		
 //		makeChatButton.setVisible(false);
 
 		makeTabBar(); // TabBar 구성하기
 		makeUserListPanel(username);
 		makeRoomListPanel();
-
+		
+		
+		
 		try {
 			socket = new Socket(ip_addr, Integer.parseInt(port_no));
 
@@ -128,7 +129,7 @@ public class ChatClient extends JFrame {
 				selectedUserList = userList.showDialog();
  				
  				// userList Dialog 띄우고 선택되면 방 만들어달라고 서버에게 요청
- 				String msg = selectedUserList;
+ 				String msg = "userlist = " + selectedUserList;
  				ChatMsg obcm = new ChatMsg(UserName, "300", msg);
  				
  				try {
@@ -220,6 +221,7 @@ public class ChatClient extends JFrame {
 		othersProfilePanel.setLayout(new GridLayout(8,1));
 		othersProfilePanel.setBounds(0,170,300,440);
 		userListPanel.add(othersProfilePanel);
+
 	}
 	
 	public void updateProfile(String username) {
@@ -269,12 +271,13 @@ public class ChatClient extends JFrame {
         makeChatButton.setContentAreaFilled(false);
 		roomListPanel.add(makeChatButton);
         makeChatButton.addActionListener(listener);
-	}
-	
-	public void updateRoomList(UserRoom userRoom) {
-		userRoomVector.add(userRoom);
-		roomListPanel.add(userRoom);
-		roomListPanel.revalidate();
+
+		
+		// roomList 보여주기 높이 70부터 
+//		UserRoom userRoom = new UserRoom();
+//		userRoom.setBounds(5,70,290,50);
+//		roomListPanel.add(userRoom);
+		
 	}
 	
 	public ImageIcon getUserIcon(String username) {
@@ -345,8 +348,7 @@ public class ChatClient extends JFrame {
 							break;
 						case "301": // 서버에서 방을 만들어서 room_id를 내려줌
 							System.out.println("Create Room --");
-							UserRoom userRoom = new UserRoom(chatClient, userIcon, UserName, cm.room_id, cm.userList, " ", " ");
-							updateRoomList(userRoom);
+							
 
 					}
 				} catch (IOException e) {

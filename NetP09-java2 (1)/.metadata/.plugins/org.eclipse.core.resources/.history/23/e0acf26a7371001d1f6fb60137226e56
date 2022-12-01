@@ -89,13 +89,15 @@ public class ChatClient extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		frame = this;
-		UserName = username;
+		
 //		makeChatButton.setVisible(false);
 
 		makeTabBar(); // TabBar 구성하기
 		makeUserListPanel(username);
 		makeRoomListPanel();
-
+		
+		
+		
 		try {
 			socket = new Socket(ip_addr, Integer.parseInt(port_no));
 
@@ -128,7 +130,8 @@ public class ChatClient extends JFrame {
 				selectedUserList = userList.showDialog();
  				
  				// userList Dialog 띄우고 선택되면 방 만들어달라고 서버에게 요청
- 				String msg = selectedUserList;
+ 				String msg = "userlist = " + selectedUserList;
+ 				System.out.println("send msg : " + msg);
  				ChatMsg obcm = new ChatMsg(UserName, "300", msg);
  				
  				try {
@@ -220,6 +223,7 @@ public class ChatClient extends JFrame {
 		othersProfilePanel.setLayout(new GridLayout(8,1));
 		othersProfilePanel.setBounds(0,170,300,440);
 		userListPanel.add(othersProfilePanel);
+
 	}
 	
 	public void updateProfile(String username) {
@@ -270,7 +274,6 @@ public class ChatClient extends JFrame {
 		roomListPanel.add(makeChatButton);
         makeChatButton.addActionListener(listener);
 	}
-	
 	public void updateRoomList(UserRoom userRoom) {
 		userRoomVector.add(userRoom);
 		roomListPanel.add(userRoom);

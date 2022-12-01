@@ -128,7 +128,10 @@ public class ChatClient extends JFrame {
 				selectedUserList = userList.showDialog();
  				
  				// userList Dialog 띄우고 선택되면 방 만들어달라고 서버에게 요청
- 				String msg = selectedUserList;
+ 				String msg = "userlist = " + selectedUserList;
+ 				System.out.println("username : " + userName);
+
+ 				System.out.println("send msg : " + msg);
  				ChatMsg obcm = new ChatMsg(UserName, "300", msg);
  				
  				try {

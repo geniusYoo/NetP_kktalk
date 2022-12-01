@@ -71,15 +71,27 @@ public class UserList extends JDialog{
 			userCheckBoxs[i].addItemListener(new ItemListener() {			
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-					for(int k=0; k<users.size(); k++) {
-						if(e.getItem() == userCheckBoxs[k]) {
-							sb.append(userCheckBoxs[k].getText());
-							sb.append(" ");
+					if(e.getStateChange() == ItemEvent.SELECTED) { // select 되면 stringbuilder에 체크박스의 username append
+						for(int k=0; k<users.size(); k++) {
+							if(e.getItem() == userCheckBoxs[k]) {
+								sb.append(userCheckBoxs[k].getText());
+								sb.append(" ");
+							}
 						}
+						System.out.println("selected / sb = " + sb.toString());
 					}
+					else { // 체크박스가 해제되면 sb에서 제거
+						JCheckBox box = (JCheckBox) e.getItem();
+						int index = sb.indexOf(box.getText());
+						sb.delete(index, index + box.getText().length()+1); // 뒤에 띄어쓰기까지 제거하기 위해 +1 
+						System.out.println("detached / sb = " + sb.toString());
+
+					}
+					
 				}
 			});
 			getContentPane().add(userCheckBoxs[i]);
+			userCheckBoxs[0].setEnabled(false);
 		}
 	}
 

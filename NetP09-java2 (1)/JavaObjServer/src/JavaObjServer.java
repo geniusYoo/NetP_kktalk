@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 import javax.swing.plaf.synth.SynthFormattedTextFieldUI;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
@@ -137,6 +138,8 @@ public class JavaObjServer extends JFrame {
 		textArea.append("code = " + msg.getCode() + "\n");
 		textArea.append("id = " + msg.getId() + "\n");
 		textArea.append("data = " + msg.getData() + "\n");
+		textArea.append("room_id = " + msg.getRoomId() + "\n");
+		textArea.append("userlist = " + msg.getUserList() + "\n");
 		textArea.setCaretPosition(textArea.getText().length());
 	}
 
@@ -154,12 +157,12 @@ public class JavaObjServer extends JFrame {
 		private Socket client_socket;
 		private Vector user_vc;
 		private Vector<String> username_vc = new Vector<>();
-		public String UserName = "";
+		public String UserName;
 		public String UserStatus;
 		public String loggedName = "";
 		public String logoutName = "";
-		public String room_id="";
-		public String room_userList="";
+		public String room_Id;
+		public String room_userList;
 		public Vector room_userVec = new Vector();
 		public int defaultRoomId=1234;
 
@@ -186,24 +189,13 @@ public class JavaObjServer extends JFrame {
 			AppendText("새로운 참가자 " + UserName + " 입장.");
 			String msg = UserName;
 			LoggedUserVec.add(msg);
-			System.out.println(">>>>>>>>UserName "+UserName);
-			for(int k=0;k<LoggedUserVec.size();k++) {
-				System.out.println(">>>>>>> LoggedUserVec "+ LoggedUserVec.elementAt(k));
-			}
+			
 			WriteOthers(msg); // 아직 user_vc에 새로 입장한 user는 포함되지 않았다.
-//			System.out.println("user_vc: " + UserVec.elementAt(0));
-//			if(user_vc.size() > 1) {
-//				for(int i=user_vc.size()-2; i>=0; i--) {
-//					System.out.println(">>>>>>>username_vc.elementAt(i) "+username_vc.elementAt(i));
-//					MakeProfile(username_vc.elementAt(i));
-//				}
-//			}
+
 			for (int j=0;j<LoggedUserVec.size();j++) {
 				if(!LoggedUserVec.elementAt(j).equals(UserName)){
 					loggedName = (String) LoggedUserVec.elementAt(j);
-					ChatMsg obcm = new ChatMsg("SERVER", "101", loggedName);
-					System.out.println(">>>>>>>>>>>>>>> loggedName " + loggedName);
-					System.out.println(">>>>> LoggedUserVec size :  "+LoggedUserVec.size());
+					ChatMsg obcm = new ChatMsg("SERVER", "101", "0","0",loggedName);
 					WriteOneObject(obcm);
 				}
 			}
@@ -223,22 +215,25 @@ public class JavaObjServer extends JFrame {
 					System.out.println(">>>>> LoggedUserVec size "+LoggedUserVec.size());
 					break;
 				}else {
-					ChatMsg obcm = new ChatMsg("SERVER","102",logoutName);
+					ChatMsg obcm = new ChatMsg("SERVER","102","0","0",logoutName);
 					WriteAllObject(obcm);
 				}
 			}
 		}
+		
 		// 방을 만들자
-		public void makeChatRoom(String room_id, String room_userList) {
+		public void makeChatRoom(String room_id, String room_userlist) {
+			room_Id = room_id;
+			room_userList = room_userlist;
 			ChatRoom room = new ChatRoom(room_id, room_userList);
 			RoomVector.add(room);
-			System.out.println(">>> roomVec size : " + RoomVector.size());
 			String [] temp = null;
-			ChatMsg obcm = new ChatMsg("SERVER", "301", room_id, room_userList);
+			System.out.println(">>> roomId ******** : " + room_Id);
+			System.out.println(">>> roomId ******** : " + room_Id);
+			ChatMsg obcm = new ChatMsg("SERVER", "301", room_Id, room_userList, "make Room");
+			AppendObject(obcm);
 			temp = room_userList.split(" ");
-			for(int a=0;a<temp.length;a++) {
-				System.out.println(">>>> what is temp : " + temp[a]);
-			}
+
 			for(int i=0;i<temp.length;i++) {
 				for(int k=0;k<user_vc.size();k++) {
 					UserService user = (UserService) user_vc.elementAt(k);
@@ -249,9 +244,6 @@ public class JavaObjServer extends JFrame {
 					}
 				}
 			}
-			
-			
-			
 		}
 
 		// 모든 User들에게 방송. 각각의 UserService Thread의 WriteONe() 을 호출한다.
@@ -284,7 +276,7 @@ public class JavaObjServer extends JFrame {
 		// 새로운 참가자가 로그인할 때 새로운 참가자를 제외한 참가자들에게 새로운 참가자의 프로필을 만들라고 지시하는 함수.
 		public void MakeProfile(String msg) {
 			try {
-				ChatMsg obcm = new ChatMsg("SERVER", "101", msg);
+				ChatMsg obcm = new ChatMsg("SERVER", "101", "0","0",msg);
 				oos.writeObject(obcm);
 			} catch (IOException e) {
 				AppendText("dos.writeObject() error");
@@ -305,8 +297,6 @@ public class JavaObjServer extends JFrame {
 			}
 		}
 		
-		
-
 		// Windows 처럼 message 제외한 나머지 부분은 NULL 로 만들기 위한 함수
 		public byte[] MakePacket(String msg) {
 			byte[] packet = new byte[BUF_LEN];
@@ -328,17 +318,13 @@ public class JavaObjServer extends JFrame {
 		// UserService Thread가 담당하는 Client 에게 1:1 전송
 		public void WriteOne(String msg) {
 			try {
-				// dos.writeUTF(msg);
-//				byte[] bb;
-//				bb = MakePacket(msg);
-//				dos.write(bb, 0, bb.length);
-				ChatMsg obcm = new ChatMsg("SERVER", "200", msg);
+
+				ChatMsg obcm = new ChatMsg("SERVER", "200","0","0", msg);
 				oos.writeObject(obcm);
 			} catch (IOException e) {
 				AppendText("dos.writeObject() error");
 				try {
-//					dos.close();
-//					dis.close();
+
 					ois.close();
 					oos.close();
 					client_socket.close();
@@ -346,7 +332,6 @@ public class JavaObjServer extends JFrame {
 					ois = null;
 					oos = null;
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				Logout(); // 에러가난 현재 객체를 벡터에서 지운다
@@ -356,7 +341,7 @@ public class JavaObjServer extends JFrame {
 		// 귓속말 전송
 		public void WritePrivate(String msg) {
 			try {
-				ChatMsg obcm = new ChatMsg("귓속말", "200", msg);
+				ChatMsg obcm = new ChatMsg("귓속말", "200", "0","0",msg);
 				oos.writeObject(obcm);
 			} catch (IOException e) {
 				AppendText("dos.writeObject() error");
@@ -423,7 +408,7 @@ public class JavaObjServer extends JFrame {
 						UserStatus = "O"; // Online 상태
 						Login();
 					} else if (cm.getCode().matches("200")) {
-						msg = String.format("[%s] %s", cm.getId(), cm.getData());
+						msg = String.format("[%s] rood_id: %s, userlist: %s, msg: %s", cm.id, cm.getRoomId(), cm.getUserList(), cm.data);
 						AppendText(msg); // server 화면에 출력
 						String[] args = msg.split(" "); // 단어들을 분리한다.
 						if (args.length == 1) { // Enter key 만 들어온 경우 Wakeup 처리만 한다.
@@ -462,21 +447,34 @@ public class JavaObjServer extends JFrame {
 							}
 						} else { // 일반 채팅 메시지
 							UserStatus = "O";
-							//WriteAll(msg + "\n"); // Write All
-							WriteAllObject(cm);
+							ChatMsg newcm = new ChatMsg("SERVER", "200", cm.getRoomId(), cm.getUserList(), cm.getData());
+							String currentRoomId = cm.getRoomId();
+							String currentUserList = "";
+							for(int i=0; i<RoomVector.size(); i++) {
+								ChatRoom room = (ChatRoom) RoomVector.elementAt(i);
+								if(room.getRoomId().equals(currentRoomId)) {
+									currentUserList = room.getUserList();
+								}
+							}
+							String [] currentUserListArray = currentUserList.split(" "); // 해당 roomid에 속한 user들의 배열
+							for(int k=0; k<currentUserListArray.length; k++) {
+								for (int i = 0; i < user_vc.size(); i++) {
+									UserService user = (UserService) user_vc.elementAt(i);
+									if(user.UserName.matches(currentUserListArray[k])) {
+										user.WriteOneObject(newcm);
+									}
+								}
+							}
+							
 						}
 					} else if (cm.getCode().matches("201")) { // 이미지 전송
 						WriteAllObject(cm);
 					} else if (cm.getCode().matches("300")) { // plus_chat 버튼을 눌러서 방을 생성 (create room)
-						System.out.println(">>> who is cm "+cm.id);
-						System.out.println(">>> userlist of room "+cm.data);
-						defaultRoomId++;
-						room_id= String.valueOf(defaultRoomId);
-						room_userList=cm.data;
-						System.out.println(">> room_id : " + room_id + " userlist : " + room_userList);
-						makeChatRoom(room_id, room_userList);
 						
-						
+						room_Id = Integer.toString(((int)(Math.random()*100)));
+						String userlist = cm.getUserList();
+						System.out.println(">> room_id : " + room_Id + " userlist : " + userlist);
+						makeChatRoom(room_Id, userlist);
 						
 					} else if (cm.getCode().matches("301")) { // 만든 방을 삭제하기 (remove room)
 						

@@ -1,4 +1,7 @@
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.StringTokenizer;
 
 import javax.swing.*;
 
@@ -10,77 +13,70 @@ public class ChatClientRoom extends JFrame{
 	private JPanel totalPanel;
 	
 	private JPanel roomInfoPanel;
-	private JLabel roomInfoImageLabel;
 	private JLabel roomInfoNameLabel;
 	
 	private JScrollPane chattingPanel;
-	private JLabel nameLabel;
-	private JLabel imageLabel;
-	private JLabel chatLabel;
-	private JLabel timeLabel;
 	
 	private JPanel inputPanel;
-	
-	public static JTextPane textArea;
 	public static JTextField txtInput;
 	private JButton sendButton;
-
-	public ChatClientRoom(ChatClient chatClient, String username, String room_id) {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(0, 0, 400, 670);
-		
-		totalPanel = new JPanel();
-		totalPanel.setLayout(null);
-		totalPanel.setBounds(0, 0, 400, 670);
-		setContentPane(totalPanel);
-		
+	
+	ChatClient ChatClient;
+	public String userName;
+	public String room_Id;
+	public String userList;
+	private JLabel roomIdLabel;
+	public ChatClientRoom(ChatClient chatClient, String username, String room_id, String userlist) {
+		ChatClient = chatClient;
+		userName = username; // 현재 자신이름!!!!
+		room_Id = room_id;
+		userList = userlist;
+		System.out.println("roomId : " + room_Id);
+		setBounds(0, 0, 400, 680);
+	
 		roomInfoPanel = new JPanel();
 		roomInfoPanel.setLayout(null);
 		roomInfoPanel.setBounds(0,0,400,50);
 		
 		chattingPanel = new JScrollPane();
 		chattingPanel.setLayout(null);
-		chattingPanel.setBounds(0,50,400,530);
+		chattingPanel.setBounds(0,50,400,550);
 		
 		inputPanel = new JPanel();
 		inputPanel.setLayout(null);
-		inputPanel.setBounds(0,580,400,65);
+		inputPanel.setBounds(0,600,400,50);
 		
-		totalPanel.add(roomInfoPanel);
-		totalPanel.add(chattingPanel);
-		totalPanel.add(inputPanel);
+		getContentPane().add(roomInfoPanel);
+		getContentPane().add(chattingPanel);
+		getContentPane().add(inputPanel);
 		
-		roomInfoImageLabel = new JLabel("image");
-		roomInfoNameLabel = new JLabel("name");
-		roomInfoImageLabel.setBounds(10,0,50,50);
-		roomInfoNameLabel.setBounds(60,0,340,50);
-		
-		roomInfoPanel.add(roomInfoImageLabel);
+		roomInfoNameLabel = new JLabel(userList + "의 채팅방");
+		roomInfoNameLabel.setBounds(8,0,318,50);
 		roomInfoPanel.add(roomInfoNameLabel);
 		
-		textArea = new JTextPane();
-		textArea.setEditable(true);
-		chattingPanel.setViewportView(textArea);
+		roomIdLabel = new JLabel(room_id);
+		roomIdLabel.setBounds(338, 0, 62, 50);
+		roomInfoPanel.add(roomIdLabel);
 		
 		txtInput = new JTextField();
-		txtInput.setBounds(0,530,330,50);
-		chattingPanel.add(txtInput);
+		txtInput.setBounds(0,600,330,50);
 		txtInput.setColumns(10);
-
+		inputPanel.add(txtInput);
+		
 		sendButton = new JButton("Send");
-		sendButton.setBounds(330,530,70,50);
-		chattingPanel.add(sendButton);
+		sendButton.setBounds(330,600,70,50);
+		inputPanel.add(sendButton);
 		
-		nameLabel = new JLabel();
-		imageLabel = new JLabel();
-		chatLabel = new JLabel();
-		timeLabel = new JLabel();
-
-		chattingPanel.add(nameLabel);
-		chattingPanel.add(imageLabel);
-		chattingPanel.add(chatLabel);
-		chattingPanel.add(timeLabel);
-		
+		sendButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String msg = txtInput.getText();
+				txtInput.setText("");
+				msg = msg.trim(); // 앞뒤 공백 제거
+				ChatMsg cm = new ChatMsg(userName, "200", room_Id, userList, msg); 
+				ChatClient.SendObject(cm);
+				
+			}
+		});
 	}
 	public void AppendText(ChatMsg cm) {
 	}

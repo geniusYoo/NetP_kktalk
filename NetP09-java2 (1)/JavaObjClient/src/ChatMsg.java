@@ -9,31 +9,26 @@ class ChatMsg implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public String id;
 	public String code; 
-	public String data = "";
+	public String data;
 	public String room_id;
 	public ImageIcon img;
-	public String userList;
+	public String userlist;
 	public Date date;
 	
-	public ChatMsg(String id, String code, String msg) {
-		this.id = id;
-		this.code = code;
-		this.data = msg;
-	}
-	
-	public ChatMsg(String id, String code, String room_id, String userList) {
+	public ChatMsg(String id, String code, String room_id, String userlist, String msg) {
 		this.id = id;
 		this.code = code;
 		this.room_id = room_id;
-		this.userList = userList;
+		this.userlist = userlist;
+		this.data = msg;
 	}
 	
 	public String getUserList() {
-		return userList;
+		return userlist;
 	}
 	
 	public void setUserList(String userList) {
-		this.userList = userList;
+		this.userlist = userList;
 	}
 	
 	public String getRoomId() {
@@ -55,6 +50,10 @@ class ChatMsg implements Serializable {
 	public String getData() {
 		return data;
 	}
+	
+	public void setData(String data) {
+		this.data = data;
+	}
 
 	public String getId() {
 		return id;
@@ -64,9 +63,6 @@ class ChatMsg implements Serializable {
 		this.id = id;
 	}
 
-	public void setData(String data) {
-		this.data = data;
-	}
 
 	public void setImg(ImageIcon img) {
 		this.img = img;

@@ -81,6 +81,7 @@ public class ChatClient extends JFrame {
 	ChatClient chatClient;
 	
 	public ChatClient(String username, String ip_addr, String port_no) {
+		chatClient = this;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 400, 630);
 		setVisible(true);
@@ -104,11 +105,9 @@ public class ChatClient extends JFrame {
 			ois = new ObjectInputStream(socket.getInputStream());
 
 			//SendMessage("/login " + UserName);
-			ChatMsg obcm = new ChatMsg(username, "100", "Hello");
+			ChatMsg obcm = new ChatMsg(username, "100", "0", "0", "Hello");
 			SendObject(obcm);
-			System.out.println("vector add start ");		
 			userVector.add(username);
-			System.out.println("vector add end , size : "+ userVector.size());
 
 			ListenNetwork net = new ListenNetwork();
 			net.start();
@@ -129,7 +128,7 @@ public class ChatClient extends JFrame {
  				
  				// userList Dialog 띄우고 선택되면 방 만들어달라고 서버에게 요청
  				String msg = selectedUserList;
- 				ChatMsg obcm = new ChatMsg(UserName, "300", msg);
+ 				ChatMsg obcm = new ChatMsg(UserName, "300", "0", msg, "request make room from client");
  				
  				try {
 					oos.writeObject(obcm);
@@ -238,7 +237,9 @@ public class ChatClient extends JFrame {
 	public void deleteProfile(String username) {
 		for(int i = 0;i<userVector.size();i++) {
 			if(userVector.elementAt(i).equals(username)) {
-				othersProfilePanel.remove(i-1);
+				if(i==0) othersProfilePanel.remove(0);
+				else if(i!=0) othersProfilePanel.remove(i-1);
+//				othersProfilePanel.setBackground(Color.GRAY);
 				userVector.removeElementAt(i);
 				break;
 			}
@@ -273,12 +274,14 @@ public class ChatClient extends JFrame {
 	
 	public void updateRoomList(UserRoom userRoom) {
 		userRoomVector.add(userRoom);
-		userRoom.setBounds(0,70,300,60);
+		int roomCount = userRoomVector.size();
+		System.out.println("update Room >>>>" + roomCount);
+		userRoom.setBounds(0,70*roomCount,300,60);
 		System.out.println("userRoom.username >>>> " + userRoom.username);
 		userRoom.chatRoomNameButton.setText(userRoom.userList);
 		roomListPanel.add(userRoom);
-
-		roomListPanel.revalidate();
+		
+		roomListPanel.repaint();
 	}
 	
 	public ImageIcon getUserIcon(String username) {
@@ -305,7 +308,7 @@ public class ChatClient extends JFrame {
 				try {					
 					Object obcm = null;
 					String msg = null;
-					ChatMsg cm;
+					ChatMsg cm = null;
 					try {
 						obcm = ois.readObject();
 					} catch (ClassNotFoundException e) {
@@ -317,11 +320,7 @@ public class ChatClient extends JFrame {
 						break;
 					if (obcm instanceof ChatMsg) {
 						cm = (ChatMsg) obcm;
-						if(cm.getRoomId() == null)
-							msg = String.format("[%s] %s", cm.getId(), cm.getData());
-						else {
-							msg = String.format("[%s] room_id: %s, userlist: %s", cm.getId(), cm.getRoomId(), cm.getUserList());
-						}
+					
 					} else
 						continue;
 					switch (cm.getCode()) {
@@ -337,11 +336,11 @@ public class ChatClient extends JFrame {
 						case "102": // Logout User (delete profile)
 							System.out.println("102");
 							System.out.println(cm.getData());
-							
 							System.out.println(">>> userVector.size "+userVector.size());
 							deleteProfile(cm.getData());
+							break;
 						case "200": // chat message
-							System.out.println("chat msg");
+							// chat message 처리하는 부분
 							break;
 						case "300": // Image 첨부
 							AppendText("[" + cm.getId() + "]");
@@ -349,7 +348,8 @@ public class ChatClient extends JFrame {
 							break;
 						case "301": // 서버에서 방을 만들어서 room_id를 내려줌
 							System.out.println("Create Room --");
-							UserRoom userRoom = new UserRoom(chatClient, userIcon, UserName, cm.room_id, cm.userList, "채팅방이 생성되었습니다.", " ");
+							System.out.println("room_id from server " + cm.getRoomId());
+							UserRoom userRoom = new UserRoom(chatClient, userIcon, UserName, cm.getRoomId(), cm.getUserList(), "채팅방이 생성되었습니다.", " ");
 							updateRoomList(userRoom);
 
 					}
@@ -407,8 +407,6 @@ public class ChatClient extends JFrame {
 //		}
 //	}
 
-	ImageIcon icon1 = new ImageIcon("src/zzz.png");
-
 	public void AppendIcon(ImageIcon icon) {
 		int len = textArea.getDocument().getLength();
 		// 끝으로 이동
@@ -418,11 +416,11 @@ public class ChatClient extends JFrame {
 
 	// 화면에 출력
 	public void AppendText(String msg) {
-		msg = msg.trim(); // 앞뒤 blank와 \n을 제거한다.
-		int len = textArea.getDocument().getLength();
-		// 끝으로 이동
-		textArea.setCaretPosition(len);
-		textArea.replaceSelection(msg + "\n");
+//		msg = msg.trim(); // 앞뒤 blank와 \n을 제거한다.
+//		int len = textArea.getDocument().getLength();
+//		// 끝으로 이동
+//		textArea.setCaretPosition(len);
+//		textArea.replaceSelection(msg + "\n");
 	}
 
 	public void AppendImage(ImageIcon ori_icon) {
@@ -475,31 +473,31 @@ public class ChatClient extends JFrame {
 		return packet;
 	}
 
-	// Server에게 network으로 전송
-	public void SendMessage(String msg) {
-		try {
-			// dos.writeUTF(msg);
-//			byte[] bb;
-//			bb = MakePacket(msg);
-//			dos.write(bb, 0, bb.length);
-			ChatMsg obcm = new ChatMsg(UserName, "200", msg);
-			oos.writeObject(obcm);
-		} catch (IOException e) {
-			// AppendText("dos.write() error");
-			AppendText("oos.writeObject() error");
-			try {
-//				dos.close();
-//				dis.close();
-				ois.close();
-				oos.close();
-				socket.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				System.exit(0);
-			}
-		}
-	}
+//	// Server에게 network으로 전송
+//	public void SendMessage(String msg) {
+//		try {
+//			// dos.writeUTF(msg);
+////			byte[] bb;
+////			bb = MakePacket(msg);
+////			dos.write(bb, 0, bb.length);
+//			ChatMsg obcm = new ChatMsg(UserName, "200", msg);
+//			oos.writeObject(obcm);
+//		} catch (IOException e) {
+//			// AppendText("dos.write() error");
+//			AppendText("oos.writeObject() error");
+//			try {
+////				dos.close();
+////				dis.close();
+//				ois.close();
+//				oos.close();
+//				socket.close();
+//			} catch (IOException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//				System.exit(0);
+//			}
+//		}
+//	}
 
 	public void SendObject(Object ob) { // 서버로 메세지를 보내는 메소드
 		try {

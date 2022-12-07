@@ -17,7 +17,7 @@ public class ChatMsgLabel extends JPanel {
 	public JLabel userTimeLabel;
 	public JTextPane chatPane; 
 	
-	public ChatMsgLabel() {
+	public ChatMsgLabel(String name, String time, String msg) {
 		setBorder(null);
 		setPreferredSize(new Dimension(380,52));
 		setBackground(Color.WHITE);
@@ -29,7 +29,7 @@ public class ChatMsgLabel extends JPanel {
 		userImageLabel.setBounds(2, 1, 50, 50);
 		add(userImageLabel);
 		
-		usernameLabel = new JLabel("username");
+		usernameLabel = new JLabel(name);
 		usernameLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		usernameLabel.setBackground(Color.WHITE);
 		usernameLabel.setBorder(null);
@@ -40,9 +40,11 @@ public class ChatMsgLabel extends JPanel {
 		chatPane.setBackground(Color.WHITE);
 		chatPane.setBorder(null);
 		chatPane.setBounds(60, 24, 220, 20);
+		
+		chatPane.setText(msg);
 		add(chatPane);
 		
-		userTimeLabel = new JLabel("13:30");
+		userTimeLabel = new JLabel(time);
 		userTimeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		userTimeLabel.setBackground(Color.WHITE);
 		userTimeLabel.setBorder(null);

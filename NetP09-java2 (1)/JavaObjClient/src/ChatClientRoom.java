@@ -1,11 +1,19 @@
 import java.awt.EventQueue;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.swing.*;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 public class ChatClientRoom extends JFrame{
 
@@ -20,12 +28,16 @@ public class ChatClientRoom extends JFrame{
 	private JPanel inputPanel;
 	public static JTextField txtInput;
 	private JButton sendButton;
+	public JTextPane textArea;
 	
 	ChatClient ChatClient;
 	public String userName;
 	public String room_Id;
 	public String userList;
 	private JLabel roomIdLabel;
+	
+	public Vector<ChatMsgLabel> chatList;
+	public int count = 0;
 	public ChatClientRoom(ChatClient chatClient, String username, String room_id, String userlist) {
 		ChatClient = chatClient;
 		userName = username; // 현재 자신이름!!!!
@@ -38,15 +50,20 @@ public class ChatClientRoom extends JFrame{
 		roomInfoPanel.setLayout(null);
 		roomInfoPanel.setBounds(0,0,400,50);
 		
-		chattingPanel = new JScrollPane();
-		chattingPanel.setLayout(null);
-		chattingPanel.setBounds(0,50,400,550);
-		
 		inputPanel = new JPanel();
 		inputPanel.setLayout(null);
 		inputPanel.setBounds(0,600,400,50);
 		
 		getContentPane().add(roomInfoPanel);
+
+		chattingPanel = new JScrollPane();
+		chattingPanel.setBounds(0,50,400,550);
+
+		textArea = new JTextPane();
+		textArea.setEditable(true);
+		textArea.setPreferredSize(new Dimension(400,50));
+		chattingPanel.setViewportView(textArea);
+
 		getContentPane().add(chattingPanel);
 		getContentPane().add(inputPanel);
 		
@@ -66,7 +83,7 @@ public class ChatClientRoom extends JFrame{
 		sendButton = new JButton("Send");
 		sendButton.setBounds(330,600,70,50);
 		inputPanel.add(sendButton);
-		
+	
 		sendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String msg = txtInput.getText();
@@ -79,7 +96,21 @@ public class ChatClientRoom extends JFrame{
 		});
 	}
 	public void AppendText(ChatMsg cm) {
+		// 기존 방법
+		System.out.println("chatclient room enter");
+		System.out.println("chatMsg : " +cm.getId() + " // "+cm.getData());
+
+		ChatMsgLabel chatMsgLabel = new ChatMsgLabel(cm.getId(), "time", cm.getData());
+		chatMsgLabel.chatPane.setBackground(Color.yellow);
+		textArea.setCaretPosition(textArea.getDocument().getLength());
+		textArea.insertComponent(chatMsgLabel);
+		chattingPanel.repaint();
+
+		
+		
+		
 	}
+	
 	public void AppendImage(ChatMsg cm) {
 		
 	}

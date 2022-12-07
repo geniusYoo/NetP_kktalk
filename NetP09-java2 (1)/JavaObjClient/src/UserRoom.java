@@ -120,7 +120,7 @@ public class UserRoom extends JPanel{
 		roomLastChatLabel.setBounds(55,35,148,16);
 		add(roomLastChatLabel);
 		
-		roomLastTimeLabel = new JLabel(getTime(new Date()));
+		roomLastTimeLabel = new JLabel("time");
 		roomLastTimeLabel.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 9));
 		roomLastTimeLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		roomLastTimeLabel.setBounds(267,1,27,15);
@@ -134,8 +134,10 @@ public class UserRoom extends JPanel{
 	
 	
 	public void AppendText(ChatMsg cm) {
+		System.out.println("success append text!");
 		setLastMsg(cm);
 		chatRoom.AppendText(cm);
+		
 	}
 	public void AppendImage(ChatMsg cm) {
 		setLastMsg(cm);
@@ -144,11 +146,11 @@ public class UserRoom extends JPanel{
 	public void setLastMsg(ChatMsg cm) {
 		lastChatMsg = cm.getData();
 		roomLastChatLabel.setText(lastChatMsg);
-		roomLastTimeLabel.setText(getTime(cm.date));
+		roomLastTimeLabel.setText("time");
 	}
 	public String getTime(Date date) {
-		SimpleDateFormat format = new SimpleDateFormat("hh:mm");
-		return format.format(date);
+		SimpleDateFormat sdate = new SimpleDateFormat("hh:mm");
+		return sdate.format(date);
 	}
 
 }

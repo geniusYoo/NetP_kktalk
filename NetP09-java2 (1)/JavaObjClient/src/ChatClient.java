@@ -79,6 +79,8 @@ public class ChatClient extends JFrame {
 	public UserList userList;
 	public Vector<UserRoom> userRoomVector = new Vector<>();
 	ChatClient chatClient;
+	ChatClientRoom ChatClientRoom;
+	UserRoom userRoom;
 	
 	public ChatClient(String username, String ip_addr, String port_no) {
 		chatClient = this;
@@ -237,14 +239,13 @@ public class ChatClient extends JFrame {
 	public void deleteProfile(String username) {
 		for(int i = 0;i<userVector.size();i++) {
 			if(userVector.elementAt(i).equals(username)) {
-				if(i==0) othersProfilePanel.remove(0);
-				else if(i!=0) othersProfilePanel.remove(i-1);
-//				othersProfilePanel.setBackground(Color.GRAY);
-				userVector.removeElementAt(i);
+				if(i==0)othersProfilePanel.remove(0);
+				else othersProfilePanel.remove(i-1);
 				break;
 			}
 		}
 		othersProfilePanel.revalidate();
+		othersProfilePanel.repaint();
 	}
 	
 	public void makeRoomListPanel() {
@@ -335,12 +336,21 @@ public class ChatClient extends JFrame {
 							break;
 						case "102": // Logout User (delete profile)
 							System.out.println("102");
-							System.out.println(cm.getData());
-							System.out.println(">>> userVector.size "+userVector.size());
+							System.out.println(">>> who is logout "+cm.getData());
 							deleteProfile(cm.getData());
-							break;
+							for(int i = 0;i<userVector.size();i++) {
+								if(userVector.elementAt(i).equals(cm.getData())) {
+									userVector.remove(i);
+								}
+							}
 						case "200": // chat message
-							// chat message 처리하는 부분
+							System.out.println("vector size ?>>> " + userRoomVector.size());
+							for(int i=0; i<userRoomVector.size(); i++) {
+								if(cm.room_id.equals(userRoomVector.elementAt(i).room_id)) {
+									System.out.println("i find room!!!!");
+									userRoomVector.elementAt(i).AppendText(cm);
+								}
+							}
 							break;
 						case "300": // Image 첨부
 							AppendText("[" + cm.getId() + "]");
@@ -349,7 +359,7 @@ public class ChatClient extends JFrame {
 						case "301": // 서버에서 방을 만들어서 room_id를 내려줌
 							System.out.println("Create Room --");
 							System.out.println("room_id from server " + cm.getRoomId());
-							UserRoom userRoom = new UserRoom(chatClient, userIcon, UserName, cm.getRoomId(), cm.getUserList(), "채팅방이 생성되었습니다.", " ");
+							userRoom = new UserRoom(chatClient, userIcon, UserName, cm.getRoomId(), cm.getUserList(), "채팅방이 생성되었습니다.", " ");
 							updateRoomList(userRoom);
 
 					}

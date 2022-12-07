@@ -71,6 +71,7 @@ public class ChatClientRoom extends JFrame{
 		textArea = new JTextPane();
 		textArea.setEditable(true);
 		textArea.setPreferredSize(new Dimension(400,50));
+		textArea.setBackground(new Color(155,187,212));
 		chattingPanel.setViewportView(textArea);
 
 		getContentPane().add(chattingPanel);
@@ -98,16 +99,23 @@ public class ChatClientRoom extends JFrame{
 		sendImgButton.setBounds(6, 600, 50, 50);
 		inputPanel.add(sendImgButton);
 	
-		sendButton.addActionListener(new ActionListener() {
+		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String msg = txtInput.getText();
-				txtInput.setText("");
-				msg = msg.trim(); // 앞뒤 공백 제거
-				ChatMsg cm = new ChatMsg(userName, "200", room_Id, userList, msg); 
-				ChatClient.SendObject(cm);
-				
+				if (e.getSource() == sendButton || e.getSource() == txtInput) {
+					String msg = null;
+					// msg = String.format("[%s] %s\n", UserName, txtInput.getText());
+					msg = txtInput.getText();
+					ChatMsg cm = new ChatMsg(userName, "200", room_Id, userList, msg);
+					ChatClient.SendObject(cm);
+					txtInput.setText(""); // 메세지를 보내고 나면 메세지 쓰는창을 비운다.
+					txtInput.requestFocus(); // 메세지를 보내고 커서를 다시 텍스트 필드로 위치시킨다
+					if (msg.contains("/exit")) // 종료 처리
+						System.exit(0);
+				}
 			}
-		});
+		};
+		txtInput.addActionListener(listener);
+		sendButton.addActionListener(listener);
 		
 		sendImgButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -124,11 +132,32 @@ public class ChatClientRoom extends JFrame{
 			}
 		});
 	}
+	
+	
 	public void AppendText(ChatMsg cm) {
 		ChatMsgLabel chatMsgLabel = new ChatMsgLabel(cm.getId(), getTime(new Date()).toString(), cm.getData());
-		chatMsgLabel.chatPane.setBackground(Color.yellow);
+		chatMsgLabel.chatPane.setBackground(new Color(255,255,255));
+		int width = chatMsgLabel.chatPane.getPreferredSize().width+7;
+		int height = chatMsgLabel.chatPane.getPreferredSize().height+5;
+		System.out.println(width+ " / "+height);
+		chatMsgLabel.chatPane.setSize(new Dimension(width,height));
+		chatMsgLabel.userTimeLabel.setLocation(60+width+5,24);
 		textArea.setCaretPosition(textArea.getDocument().getLength());
 		textArea.insertComponent(chatMsgLabel);
+		chattingPanel.repaint();
+	}
+	
+	public void AppendTextR(ChatMsg cm) {
+		ChatMyMsgLabel chatMyMsgLabel = new ChatMyMsgLabel(cm.getId(), getTime(new Date()).toString(), cm.getData());
+		chatMyMsgLabel.chatPane.setBackground(new Color(254,240,27));
+		int width = chatMyMsgLabel.chatPane.getPreferredSize().width+7; // 내가 보낼 메세지의 배경 너비 
+		int height = chatMyMsgLabel.chatPane.getPreferredSize().height+5;
+		System.out.println(width+ " / "+height);
+		chatMyMsgLabel.chatPane.setLocation(380-width-60, height);
+		chatMyMsgLabel.chatPane.setSize(new Dimension(width,height));
+		chatMyMsgLabel.userTimeLabel.setLocation(380-width-110,24);
+		textArea.setCaretPosition(textArea.getDocument().getLength());
+		textArea.insertComponent(chatMyMsgLabel);
 		chattingPanel.repaint();
 	}
 	

@@ -79,7 +79,7 @@ public class ChatClient extends JFrame {
 	public ImageIcon userIcon;
 	public UserList userList;
 	public Vector<UserRoom> userRoomVector = new Vector<>();
-	public HashMap<String, ImageIcon> userMap;
+	public ImageIcon defaultImgIcon = new ImageIcon(ChatClient.class.getResource("/icons/default_profile.jpeg"));
 	
 	ChatClient chatClient;
 	ChatClientRoom ChatClientRoom;
@@ -98,10 +98,6 @@ public class ChatClient extends JFrame {
 		UserName = username;
 //		makeChatButton.setVisible(false);
 
-		makeTabBar(); // TabBar 구성하기
-		makeUserListPanel(username);
-		makeRoomListPanel();
-
 		try {
 			socket = new Socket(ip_addr, Integer.parseInt(port_no));
 
@@ -113,7 +109,11 @@ public class ChatClient extends JFrame {
 			ChatMsg obcm = new ChatMsg(username, "100", "0", "0", "Hello");
 			SendObject(obcm);
 			userVector.add(username);
-//			userMap.put(username, )
+
+			makeTabBar(); // TabBar 구성하기
+			makeUserListPanel(username);
+			makeRoomListPanel();
+			
 			ListenNetwork net = new ListenNetwork();
 			net.start();
 
@@ -229,10 +229,12 @@ public class ChatClient extends JFrame {
 	}
 	
 	public void updateProfile(String username) {
-			
+		
 		UserProfile otherUser = new UserProfile(username);
 		System.out.println(">>>>>> "+username);
+
 		othersProfilePanel.add(otherUser);
+		
 		System.out.println(">>>> add success "+username);
 		otherUser.setLayout(null);
 		otherUser.setBounds(0,170,300,440);
@@ -293,6 +295,7 @@ public class ChatClient extends JFrame {
 	public ImageIcon getUserIcon(String username) {
 		return userIcon;
 	}
+	
 	ActionListener listener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if(userListButton.equals(e.getSource())) {		
@@ -312,7 +315,7 @@ public class ChatClient extends JFrame {
 		}
 	};
 	
-	
+
 	// Server Message를 수신해서 화면에 표시
 	class ListenNetwork extends Thread {
 		public void run() {
@@ -345,6 +348,7 @@ public class ChatClient extends JFrame {
 							updateProfile(cm.getData());
 							userVector.add(cm.getData());
 							break;
+							
 						case "102": // Logout User (delete profile)
 							System.out.println("102");
 							System.out.println(">>> who is logout "+cm.getData());
@@ -360,12 +364,16 @@ public class ChatClient extends JFrame {
 									userRoomVector.elementAt(i).AppendText(cm);
 								}
 							}
+							
 						case "200": // chat message
 							System.out.println("vector size ?>>> " + userRoomVector.size());
 							for(int i=0; i<userRoomVector.size(); i++) {
 								if(cm.room_id.equals(userRoomVector.elementAt(i).room_id)) {
-									System.out.println("i find room!!!!");
-									userRoomVector.elementAt(i).AppendText(cm);
+									if(UserName.equals(cm.getId())) {
+										userRoomVector.elementAt(i).AppendTextR(cm);
+									} else {
+										userRoomVector.elementAt(i).AppendText(cm);
+									}
 								}
 							}
 							break;
@@ -385,13 +393,13 @@ public class ChatClient extends JFrame {
 							updateRoomList(userRoom);
 							
 						case "600":
-							for(int i=0; i<userRoomVector.size(); i++) {
-								if(cm.room_id.equals(userRoomVector.elementAt(i).room_id)) {
-									System.out.println("logout message" + cm.getData());
-									userRoomVector.elementAt(i).AppendText(cm);
-								}
-							}
-							break;
+//							for(int i=0; i<userRoomVector.size(); i++) {
+//								if(cm.room_id.equals(userRoomVector.elementAt(i).room_id)) {
+//									System.out.println("logout message" + cm.getData());
+//									userRoomVector.elementAt(i).AppendText(cm);
+//								}
+//							}
+//							break;
 
 					}
 				} catch (IOException e) {
@@ -410,43 +418,7 @@ public class ChatClient extends JFrame {
 			}
 		}
 	}
-
-//	// keyboard enter key 치면 서버로 전송
-//	class TextSendAction implements ActionListener {
-//		@Override
-//		public void actionPerformed(ActionEvent e) {
-//			// Send button을 누르거나 메시지 입력하고 Enter key 치면
-//			if (e.getSource() == btnSend || e.getSource() == txtInput) {
-//				String msg = null;
-//				// msg = String.format("[%s] %s\n", UserName, txtInput.getText());
-//				msg = txtInput.getText();
-//				SendMessage(msg);
-//				txtInput.setText(""); // 메세지를 보내고 나면 메세지 쓰는창을 비운다.
-//				txtInput.requestFocus(); // 메세지를 보내고 커서를 다시 텍스트 필드로 위치시킨다
-//				if (msg.contains("/exit")) // 종료 처리
-//					System.exit(0);
-//			}
-//		}
-//	}
-
-//	class ImageSendAction implements ActionListener {
-//		@Override
-//		public void actionPerformed(ActionEvent e) {
-//			// 액션 이벤트가 sendBtn일때 또는 textField 에세 Enter key 치면
-//			if (e.getSource() == imgBtn) {
-//				frame = new Frame("이미지첨부");
-//				fd = new FileDialog(frame, "이미지 선택", FileDialog.LOAD);
-//				// frame.setVisible(true);
-//				// fd.setDirectory(".\\");
-//				fd.setVisible(true);
-//				//System.out.println(fd.getDirectory() + fd.getFile());
-//				ChatMsg obcm = new ChatMsg(UserName, "300", "IMG");
-//				ImageIcon img = new ImageIcon(fd.getDirectory() + fd.getFile());
-//				obcm.setImg(img);
-//				SendObject(obcm);
-//			}
-//		}
-//	}
+	
 
 	public void AppendIcon(ImageIcon icon) {
 		int len = textArea.getDocument().getLength();
@@ -514,32 +486,6 @@ public class ChatClient extends JFrame {
 		return packet;
 	}
 
-//	// Server에게 network으로 전송
-//	public void SendMessage(String msg) {
-//		try {
-//			// dos.writeUTF(msg);
-////			byte[] bb;
-////			bb = MakePacket(msg);
-////			dos.write(bb, 0, bb.length);
-//			ChatMsg obcm = new ChatMsg(UserName, "200", msg);
-//			oos.writeObject(obcm);
-//		} catch (IOException e) {
-//			// AppendText("dos.write() error");
-//			AppendText("oos.writeObject() error");
-//			try {
-////				dos.close();
-////				dis.close();
-//				ois.close();
-//				oos.close();
-//				socket.close();
-//			} catch (IOException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//				System.exit(0);
-//			}
-//		}
-//	}
-
 	public void SendObject(Object ob) { // 서버로 메세지를 보내는 메소드
 		try {
 			oos.writeObject(ob);
@@ -549,3 +495,5 @@ public class ChatClient extends JFrame {
 		}
 	}
 }
+
+

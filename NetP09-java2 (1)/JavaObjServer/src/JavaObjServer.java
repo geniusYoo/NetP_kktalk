@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -26,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.PublicKey;
+import java.util.HashMap;
 import java.util.Vector;
 import java.util.jar.Attributes.Name;
 import java.awt.event.ActionEvent;
@@ -45,6 +47,7 @@ public class JavaObjServer extends JFrame {
 	private Vector RoomVector = new Vector();
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
 
+	public ImageIcon defaultImgIcon = new ImageIcon(JavaObjServer.class.getResource("/icons/default_profile.jpeg"));
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -186,16 +189,17 @@ public class JavaObjServer extends JFrame {
 		public String getUsername() { 
 			return this.UserName;
 		}
-		public void Login() {
+		public void Login(ChatMsg cm) {
 			AppendText("새로운 참가자 " + UserName + " 입장.");
 			String msg = UserName;
 			LoggedUserVec.add(msg);
 			
-			WriteOthers(msg); // 아직 user_vc에 새로 입장한 user는 포함되지 않았다.
+			WriteOthers(cm); // 아직 user_vc에 새로 입장한 user는 포함되지 않았다.
 
 			for (int j=0;j<LoggedUserVec.size();j++) {
 				if(!LoggedUserVec.elementAt(j).equals(UserName)){
 					loggedName = (String) LoggedUserVec.elementAt(j);
+
 					ChatMsg obcm = new ChatMsg("SERVER", "101", "0","0",loggedName);
 					WriteOneObject(obcm);
 				}
@@ -264,19 +268,19 @@ public class JavaObjServer extends JFrame {
 		}
 
 		// 나를 제외한 User들에게 방송. 각각의 UserService Thread의 WriteOne() 을 호출한다.
-		public void WriteOthers(String str) {
+		public void WriteOthers(ChatMsg cm) {
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
 				if (user != this && user.UserStatus == "O") {
-					user.MakeProfile(str);
+					user.MakeProfile(cm);
 				}
 			}
 		}
 		
 		// 새로운 참가자가 로그인할 때 새로운 참가자를 제외한 참가자들에게 새로운 참가자의 프로필을 만들라고 지시하는 함수.
-		public void MakeProfile(String msg) {
+		public void MakeProfile(ChatMsg cm) {
 			try {
-				ChatMsg obcm = new ChatMsg("SERVER", "101", "0","0",msg);
+				ChatMsg obcm = new ChatMsg("SERVER", "101", "0","0",cm.getId());
 				oos.writeObject(obcm);
 			} catch (IOException e) {
 				AppendText("dos.writeObject() error");
@@ -405,7 +409,7 @@ public class JavaObjServer extends JFrame {
 						UserName = cm.getId();
 						username_vc.add(cm.getId());
 						UserStatus = "O"; // Online 상태
-						Login();
+						Login(cm);
 					} else if (cm.getCode().matches("200")) {
 						msg = String.format("[%s] rood_id: %s, userlist: %s, msg: %s", cm.id, cm.getRoomId(), cm.getUserList(), cm.data);
 						AppendText(msg); // server 화면에 출력
@@ -466,11 +470,14 @@ public class JavaObjServer extends JFrame {
 							}
 							
 						}
-					} else if (cm.getCode().matches("201")) { // 이미지 전송
+					} 
+					else if (cm.getCode().matches("103")) { // 프로필 사진 바꾸기
+						WriteAllObject(cm);
+					}
+					else if (cm.getCode().matches("201")) { // 이미지 전송
 						
 						UserStatus = "O";
 						ChatMsg newcm = new ChatMsg(cm.getId(), "201", cm.getRoomId(), cm.getUserList(), cm.getData());
-						newcm.setImg(cm.getImg());
 						String currentRoomId = cm.getRoomId();
 						String currentUserList = "";
 						for(int i=0; i<RoomVector.size(); i++) {

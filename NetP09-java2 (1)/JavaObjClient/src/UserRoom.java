@@ -139,6 +139,12 @@ public class UserRoom extends JPanel{
 		chatRoom.AppendText(cm);
 		
 	}
+	public void AppendTextR(ChatMsg cm) {
+		System.out.println("AppendText R");
+		setLastMsg(cm);
+		chatRoom.AppendTextR(cm);
+	}
+	
 	public void AppendImage(ChatMsg cm) {
 		setLastMsg(cm);
 		chatRoom.AppendImage(cm);

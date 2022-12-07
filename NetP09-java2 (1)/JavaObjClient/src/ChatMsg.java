@@ -67,4 +67,8 @@ class ChatMsg implements Serializable {
 	public void setImg(ImageIcon img) {
 		this.img = img;
 	}
+	
+	public ImageIcon getImg() {
+		return img;
+	}
 }

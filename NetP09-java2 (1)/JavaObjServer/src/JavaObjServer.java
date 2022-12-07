@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
@@ -228,8 +229,7 @@ public class JavaObjServer extends JFrame {
 			ChatRoom room = new ChatRoom(room_id, room_userList);
 			RoomVector.add(room);
 			String [] temp = null;
-			System.out.println(">>> roomId ******** : " + room_Id);
-			System.out.println(">>> roomId ******** : " + room_Id);
+
 			ChatMsg obcm = new ChatMsg("SERVER", "301", room_Id, room_userList, "make Room");
 			AppendObject(obcm);
 			temp = room_userList.split(" ");
@@ -382,7 +382,6 @@ public class JavaObjServer extends JFrame {
 		public void run() {
 			while (true) { // 사용자 접속을 계속해서 받기 위해 while문
 				try {
-
 					Object obcm = null;
 					String msg = null;
 					ChatMsg cm = null;
@@ -447,7 +446,7 @@ public class JavaObjServer extends JFrame {
 							}
 						} else { // 일반 채팅 메시지
 							UserStatus = "O";
-							ChatMsg newcm = new ChatMsg("SERVER", "200", cm.getRoomId(), cm.getUserList(), cm.getData());
+							ChatMsg newcm = new ChatMsg(cm.getId(), "200", cm.getRoomId(), cm.getUserList(), cm.getData());
 							String currentRoomId = cm.getRoomId();
 							String currentUserList = "";
 							for(int i=0; i<RoomVector.size(); i++) {
@@ -468,7 +467,27 @@ public class JavaObjServer extends JFrame {
 							
 						}
 					} else if (cm.getCode().matches("201")) { // 이미지 전송
-						WriteAllObject(cm);
+						
+						UserStatus = "O";
+						ChatMsg newcm = new ChatMsg(cm.getId(), "201", cm.getRoomId(), cm.getUserList(), cm.getData());
+						newcm.setImg(cm.getImg());
+						String currentRoomId = cm.getRoomId();
+						String currentUserList = "";
+						for(int i=0; i<RoomVector.size(); i++) {
+							ChatRoom room = (ChatRoom) RoomVector.elementAt(i);
+							if(room.getRoomId().equals(currentRoomId)) {
+								currentUserList = room.getUserList();
+							}
+						}
+						String [] currentUserListArray = currentUserList.split(" "); // 해당 roomid에 속한 user들의 배열
+						for(int k=0; k<currentUserListArray.length; k++) {
+							for (int i = 0; i < user_vc.size(); i++) {
+								UserService user = (UserService) user_vc.elementAt(i);
+								if(user.UserName.matches(currentUserListArray[k])) {
+									user.WriteOneObject(newcm);
+								}
+							}
+						}
 					} else if (cm.getCode().matches("300")) { // plus_chat 버튼을 눌러서 방을 생성 (create room)
 						
 						room_Id = Integer.toString(((int)(Math.random()*100)));

@@ -85,9 +85,7 @@ public class UserList extends JDialog{
 						int index = sb.indexOf(box.getText());
 						sb.delete(index, index + box.getText().length()+1); // 뒤에 띄어쓰기까지 제거하기 위해 +1 
 						System.out.println("detached / sb = " + sb.toString());
-
-					}
-					
+					}	
 				}
 			});
 			getContentPane().add(userCheckBoxs[i]);

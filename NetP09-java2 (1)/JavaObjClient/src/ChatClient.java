@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.PublicKey;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -78,6 +79,8 @@ public class ChatClient extends JFrame {
 	public ImageIcon userIcon;
 	public UserList userList;
 	public Vector<UserRoom> userRoomVector = new Vector<>();
+	public HashMap<String, ImageIcon> userMap;
+	
 	ChatClient chatClient;
 	ChatClientRoom ChatClientRoom;
 	UserRoom userRoom;
@@ -110,7 +113,7 @@ public class ChatClient extends JFrame {
 			ChatMsg obcm = new ChatMsg(username, "100", "0", "0", "Hello");
 			SendObject(obcm);
 			userVector.add(username);
-
+//			userMap.put(username, )
 			ListenNetwork net = new ListenNetwork();
 			net.start();
 
@@ -186,6 +189,8 @@ public class ChatClient extends JFrame {
         exitButton.setIcon(exitIcon);
         exitButton.setBorderPainted(false);
         exitButton.setContentAreaFilled(false);
+        exitButton.addActionListener(listener);
+
 	}
 	
 	// 처음 로딩될 때 자신의 프로필을 userListPanel에 붙이는 과정
@@ -298,6 +303,12 @@ public class ChatClient extends JFrame {
 				userListPanel.setVisible(false);
 				roomListPanel.setVisible(true);
 			}
+			else if(exitButton.equals(e.getSource())) {
+				String msg = UserName + "님이 퇴장하였습니다"; 
+				ChatMsg cm = new ChatMsg(UserName, "600", "0", "0", msg);
+				SendObject(cm);
+				System.exit(0);
+			}
 		}
 	};
 	
@@ -343,6 +354,12 @@ public class ChatClient extends JFrame {
 									userVector.remove(i);
 								}
 							}
+							for(int i=0; i<userRoomVector.size(); i++) {
+								if(cm.room_id.equals(userRoomVector.elementAt(i).room_id)) {
+									System.out.println("logout ***********");
+									userRoomVector.elementAt(i).AppendText(cm);
+								}
+							}
 						case "200": // chat message
 							System.out.println("vector size ?>>> " + userRoomVector.size());
 							for(int i=0; i<userRoomVector.size(); i++) {
@@ -352,15 +369,29 @@ public class ChatClient extends JFrame {
 								}
 							}
 							break;
-						case "300": // Image 첨부
-							AppendText("[" + cm.getId() + "]");
-							AppendImage(cm.img);
+						case "201": // Image 첨부
+							System.out.println("vector size ?>>> " + userRoomVector.size());
+							for(int i=0; i<userRoomVector.size(); i++) {
+								if(cm.room_id.equals(userRoomVector.elementAt(i).room_id)) {
+									System.out.println("i find room!!!!");
+									userRoomVector.elementAt(i).AppendImage(cm);
+								}
+							}
 							break;
 						case "301": // 서버에서 방을 만들어서 room_id를 내려줌
 							System.out.println("Create Room --");
 							System.out.println("room_id from server " + cm.getRoomId());
 							userRoom = new UserRoom(chatClient, userIcon, UserName, cm.getRoomId(), cm.getUserList(), "채팅방이 생성되었습니다.", " ");
 							updateRoomList(userRoom);
+							
+						case "600":
+							for(int i=0; i<userRoomVector.size(); i++) {
+								if(cm.room_id.equals(userRoomVector.elementAt(i).room_id)) {
+									System.out.println("logout message" + cm.getData());
+									userRoomVector.elementAt(i).AppendText(cm);
+								}
+							}
+							break;
 
 					}
 				} catch (IOException e) {

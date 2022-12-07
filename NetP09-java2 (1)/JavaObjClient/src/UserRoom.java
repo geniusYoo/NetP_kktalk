@@ -146,7 +146,7 @@ public class UserRoom extends JPanel{
 	public void setLastMsg(ChatMsg cm) {
 		lastChatMsg = cm.getData();
 		roomLastChatLabel.setText(lastChatMsg);
-		roomLastTimeLabel.setText("time");
+		roomLastTimeLabel.setText(getTime(new Date()));
 	}
 	public String getTime(Date date) {
 		SimpleDateFormat sdate = new SimpleDateFormat("hh:mm");
